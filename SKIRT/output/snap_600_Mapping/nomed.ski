@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A SKIRT parameter file © Astronomical Observatory, Ghent University -->
+<skirt-simulation-hierarchy type="MonteCarloSimulation" format="9" producer="SKIRT v9.0 (git 8765014-dirty built on 24/01/2025 at 15:50:54)" time="2025-01-25T13:54:08.855">
+    <MonteCarloSimulation userLevel="Regular" simulationMode="NoMedium" iteratePrimaryEmission="false" iterateSecondaryEmission="false" numPackets="1e6">
+        <random type="Random">
+            <Random seed="0"/>
+        </random>
+        <units type="Units">
+            <ExtragalacticUnits wavelengthOutputStyle="Wavelength" fluxOutputStyle="Frequency"/>
+        </units>
+        <cosmology type="Cosmology">
+            <LocalUniverseCosmology/>
+        </cosmology>
+        <sourceSystem type="SourceSystem">
+            <SourceSystem minWavelength="0.09 micron" maxWavelength="100 micron" wavelengths="0.55 micron" sourceBias="0.5">
+                <sources type="Source">
+                    <ParticleSource filename="stars.txt" importVelocity="false" importVelocityDispersion="false" importCurrentMass="false" useColumns="" sourceWeight="1" wavelengthBias="0.5">
+                        <smoothingKernel type="SmoothingKernel">
+                            <CubicSplineSmoothingKernel/>
+                        </smoothingKernel>
+                        <sedFamily type="SEDFamily">
+                            <MappingsSEDFamily/>
+                        </sedFamily>
+                        <wavelengthBiasDistribution type="WavelengthDistribution">
+                            <DefaultWavelengthDistribution/>
+                        </wavelengthBiasDistribution>
+                    </ParticleSource>
+                </sources>
+            </SourceSystem>
+        </sourceSystem>
+        <instrumentSystem type="InstrumentSystem">
+            <InstrumentSystem>
+                <defaultWavelengthGrid type="WavelengthGrid">
+                    <LogWavelengthGrid minWavelength="0.09 micron" maxWavelength="1e4 micron" numWavelengths="25"/>
+                </defaultWavelengthGrid>
+                <instruments type="Instrument">
+                    <SEDInstrument instrumentName="i00" distance="1 Mpc" inclination="0 deg" azimuth="0 deg" roll="0 deg" radius="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                </instruments>
+            </InstrumentSystem>
+        </instrumentSystem>
+        <probeSystem type="ProbeSystem">
+            <ProbeSystem/>
+        </probeSystem>
+    </MonteCarloSimulation>
+</skirt-simulation-hierarchy>
