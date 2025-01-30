@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from My_Plugin.quantity import L_IR, L_gamma
+from My_Plugin.quantity import L_IR, L_gamma_yt
 import yt
+import os
 from astropy.cosmology import Planck18, z_at_value
 import astropy.units as u
 import astropy.constants as c
@@ -12,13 +13,44 @@ plt.rcParams.update({
     "font.family": "serif"
     }) 
 
-def plot_sim(snap, ax):
-    sed_path = f'/tscc/lustre/ddn/scratch/yel051/SKIRT/output/snap_{snap}/run_SKIRT_i00_sed.dat'
+def calculate_Lgamma(snap, mode='yt'):
     fname = f'/tscc/lustre/ddn/scratch/yul232/m12i_cr_700/output/snapdir_{snap:03d}/'
-    ds = yt.load(fname)
+    if mode == 'yt':
+        ds = yt.load(fname)
+        out = L_gamma_yt(ds)
+    else:
+        out = Lgamma_LYH(snap)
+    return out
+
+def Lgamma_YHL(snap):
+    print('this part is not done yet!')
+    L_gamma = 0
+    return L_gamma
+
+def calculate_LIR(snap):
+    sed_path = f'/tscc/lustre/ddn/scratch/yel051/SKIRT/output/snap_{snap}/run_SKIRT_i00_sed.dat'
     LIR = L_IR(sed_path)
-    Lgamma = L_gamma(ds)
-    ax.scatter(LIR.to('L_sun'), Lgamma, label=f'm12i snap {snap}', marker='*')
+    return LIR
+
+def make_table(snaps, table_path):
+    data = []
+    for snap in snaps:
+        data.append({'snap': snap, 'L_gamma': calculate_Lgamma(snap), 'L_IR': calculate_LIR(snap)})
+
+    if os.path.exists(table_path):
+        existing_df = pd.read_csv(table_path)
+        new_df = pd.DataFrame(data)
+        df = pd.concat([existing_df, new_df]).drop_duplicates(subset='snap', keep='last')
+    else:
+        df = pd.DataFrame(data)
+    df = df.sort_values(by='snap')
+    df.to_csv(table_path, index=False)
+
+def plot_sim(table_path, ax):
+    df = pd.read_csv(table_path)
+    LIR = np.array(df['L_IR'])*((u.erg/u.s)/u.L_sun).to('')
+    Lgamma = np.array(df['L_gamma'])
+    ax.scatter(LIR, Lgamma, label=f'm12i', marker='*', color='C1')
     return ax
 
 def plot_obs(ax):
@@ -45,12 +77,14 @@ def finalize(fig, ax):
     fig.savefig('LIR-Lgamma.png', dpi=300)
 
 def main():
+    table_path = './tables/Lgamma_LIR.csv'
     #snaps = np.arange(100,600,50)
     #snaps[0] += 2
-    snaps = [100, 600]
-    fig, ax = plt.subplots(figsize=(5,3))
-    for snap in snaps:
-        plot_sim(snap, ax)
+    #snaps = [100, 600]
+    snaps = [600]
+    #make_table(snaps, table_path)
+    fig, ax = plt.subplots(figsize=(5,4))
+    plot_sim(table_path, ax)
     plot_obs(ax)
     finalize(fig, ax)
 

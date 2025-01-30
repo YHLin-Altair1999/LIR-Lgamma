@@ -31,7 +31,7 @@ def one_sed(fname, x_unit='micron'):
         )
     ax.legend()
     ax.set_xlim(1e-1,1e3)
-    ax.set_ylim(bottom=1e14)
+    ax.set_ylim(bottom=1e10)
     ax.set_xlabel(r'Wavelength (micron)')
     ax.set_ylabel(r'$\nu F_{\nu} ~{\rm (Hz \cdot Jy)}$')
     plt.tight_layout()

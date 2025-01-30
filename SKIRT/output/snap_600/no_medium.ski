@@ -12,7 +12,7 @@
             <LocalUniverseCosmology/>
         </cosmology>
         <sourceSystem type="SourceSystem">
-            <SourceSystem minWavelength="0.09 micron" maxWavelength="100 micron" wavelengths="0.55 micron" sourceBias="0.5">
+            <SourceSystem minWavelength="0.09 micron" maxWavelength="1e4 micron" wavelengths="0.55 micron" sourceBias="0.5">
                 <sources type="Source">
                     <ParticleSource filename="stars.txt" importVelocity="false" importVelocityDispersion="false" importCurrentMass="false" useColumns="" sourceWeight="1" wavelengthBias="0.5">
                         <smoothingKernel type="SmoothingKernel">

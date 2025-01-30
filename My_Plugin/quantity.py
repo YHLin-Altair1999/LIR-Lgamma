@@ -21,10 +21,10 @@ def L_IR(fname, band=np.array([8,1000])*u.micron):
     L_nu = 4*np.pi*d**2*F_nu
     wav = np.array(df['wavelength'])*u.micron
     nu = c.c/wav
-    L_IR = -simpson(L_nu.to('erg/(s*Hz)').value, x=nu.to('Hz').value)*u.erg/u.s
+    L_IR = -simpson(L_nu.to('erg/(s*Hz)').value, x=nu.to('Hz').value)#*u.erg/u.s
     return L_IR
 
-def L_gamma(ds):
+def L_gamma_yt(ds):
     ds = add_fields(ds)
     snap_id = int(ds.filename.split('/')[-1].split('.')[0].split('_')[-1])
     center = get_center(snap_id)

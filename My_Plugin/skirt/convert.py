@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 plt.rcParams.update({
     "text.usetex": True,
     "text.latex.preamble": r"\usepackage{amsmath}",
-    'font.family': 'STIXGeneral'
+    #'font.family': 'STIXGeneral'
     })
 
 def get_units(f):
@@ -153,7 +153,7 @@ def convert_stellar_onefile(f,
     a_sf  = np.array(f['PartType4']['StellarFormationTime'])
     z_sf  = 1/a_sf-1
     t_sf  = cosmo.lookback_time(z_sf)
-    age   = (t_sf - t_now).to('yr').value
+    age   = (t_sf - t_now).to('Gyr').value
 
     # Adjust for mass loss
 
@@ -162,7 +162,7 @@ def convert_stellar_onefile(f,
     output[:,4] = mass.to('M_sun').value
     output[:,5] = metallicity
     output[:,6] = age
-    output = output[r<r_max]
+    output = output[(r<r_max)]
 
     return output
 
