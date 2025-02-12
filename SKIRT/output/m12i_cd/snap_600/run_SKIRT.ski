@@ -12,7 +12,7 @@
             <FlatUniverseCosmology redshift="0.1" reducedHubbleConstant="0.702" matterDensityFraction="0.28"/>
         </cosmology>
         <sourceSystem type="SourceSystem">
-            <SourceSystem minWavelength="0.09 micron" maxWavelength="100 micron" wavelengths="0.55 micron" sourceBias="0.5">
+            <SourceSystem minWavelength="0.09 micron" maxWavelength="1e1 micron" wavelengths="0.55 micron" sourceBias="0.5">
                 <sources type="Source">
                     <ParticleSource filename="stars.txt" importVelocity="false" importVelocityDispersion="false" importCurrentMass="false" useColumns="" sourceWeight="1" wavelengthBias="0.5">
                         <smoothingKernel type="SmoothingKernel">
@@ -75,7 +75,7 @@
                 <grid type="SpatialGrid">
                     <PolicyTreeSpatialGrid minX="-1.50000e+04 pc" maxX="1.50000e+04 pc" minY="-1.50000e+04 pc" maxY="1.50000e+04 pc" minZ="-1.50000e+04 pc" maxZ="1.50000e+04 pc" treeType="OctTree">
                         <policy type="TreePolicy">
-                            <DensityTreePolicy minLevel="3" maxLevel="8" maxDustFraction="1e-6" maxDustOpticalDepth="0.5" wavelength="0.55 micron" maxDustDensityDispersion="0" maxElectronFraction="1e-6" maxGasFraction="1e-6"/>
+                            <DensityTreePolicy minLevel="3" maxLevel="10" maxDustFraction="1e-6" maxDustOpticalDepth="0.5" wavelength="0.55 micron" maxDustDensityDispersion="0" maxElectronFraction="1e-6" maxGasFraction="1e-6"/>
                         </policy>
                     </PolicyTreeSpatialGrid>
                 </grid>
@@ -88,8 +88,6 @@
                 </defaultWavelengthGrid>
                 <instruments type="Instrument">
                     <FullInstrument instrumentName="i00" distance="1 Mpc" inclination="0 deg"  azimuth="0 deg" roll="0 deg" fieldOfViewX="3.00000e+04 pc" numPixelsX="400" centerX="0 pc" fieldOfViewY="3.00000e+04 pc" numPixelsY="400" centerY="0 pc" recordComponents="true" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
-                    <FullInstrument instrumentName="i45" distance="1 Mpc" inclination="45 deg" azimuth="0 deg" roll="0 deg" fieldOfViewX="3.00000e+04 pc" numPixelsX="400" centerX="0 pc" fieldOfViewY="3.00000e+04 pc" numPixelsY="400" centerY="0 pc" recordComponents="true" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
-                    <FullInstrument instrumentName="i90" distance="1 Mpc" inclination="90 deg" azimuth="0 deg" roll="0 deg" fieldOfViewX="3.00000e+04 pc" numPixelsX="400" centerX="0 pc" fieldOfViewY="3.00000e+04 pc" numPixelsY="400" centerY="0 pc" recordComponents="true" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
                 </instruments>
             </InstrumentSystem>
         </instrumentSystem>

@@ -44,14 +44,15 @@ def epsilon_gamma(field, data):
     '''
     beta_pi = 0.7
     x_e = data[('PartType0', 'ElectronAbundance')]
-    #n_n = data[('PartType0', 'Density')] / c.mp # naive assumption, to be refine in the future
-    f_Hydrogen = 1 - data[('PartType0', 'Metallicity_01')]
-    n_n = data[('PartType0', 'Density')] * f_Hydrogen / c.mp 
+    n_n = data[('PartType0', 'Density')] / c.mp 
+    #f_Hydrogen = 1 - data[('PartType0', 'Metallicity_01')] - data[('PartType0', 'Metallicity_00')]
+    #n_n = data[('PartType0', 'Density')] * f_Hydrogen / c.mp 
     e_cr = data[('gas', 'CR_energy_density')]
-    Gamma_cr_had = (5.8e-16*(1+0.28*x_e)*
+    Gamma_cr_had = (5.8e-16*
                     (e_cr/YTQuantity(1, "erg*cm**(-3)"))*
                     (n_n/YTQuantity(1, "cm**(-3)"))*
                     YTQuantity(1, 'erg*cm**(-3)*s**(-1)'))
+    epsilon_cr_had = 1/3 * beta_pi * Gamma_cr_had
     return Gamma_cr_had
 
 def epsilon_gamma_incell(field, data):

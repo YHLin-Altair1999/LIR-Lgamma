@@ -5,10 +5,11 @@ from astropy.cosmology import FlatLambdaCDM
 import astropy.units as u
 import astropy.constants as c
 from ..enclose import find_minimal_enclosing_radius_kdtree
-from ..LoadData import get_center, get_angular_momentum
+from ..LoadData import get_center, get_angular_momentum, get_snap_path
 from glob import glob
 import logging
 from gizmo_analysis import gizmo_star
+import os
 logging.basicConfig(level=logging.INFO)
 plt.rcParams.update({
     "text.usetex": True,
@@ -28,14 +29,17 @@ def get_units(f):
     code_velocity = 1*u.km/u.s*np.sqrt(a)
     return [code_mass, code_length, code_velocity]
 
-def get_data(snap_id=600):
+def get_data(galaxy, snap=600):
     # Load the file
-    fnames = list(glob(f'/tscc/lustre/ddn/scratch/yul232/m12i_cr_700/output/snapdir_{snap_id:03d}/snapshot_{snap_id:03d}.*.hdf5'))
+    target = os.path.join(get_snap_path(galaxy, snap), '*.hdf5')
+    print(target)
+    fnames = list(glob(target))
+    print(fnames)
     fs = [h5py.File(fname, 'r') for fname in fnames]
     return fs
 
-def align_axis(snap_id: int, array: np.ndarray) -> np.ndarray:
-    L = np.array(get_angular_momentum(snap_id))
+def align_axis(galaxy: str, snap_id: int, array: np.ndarray) -> np.ndarray:
+    L = np.array(get_angular_momentum(galaxy, snap_id))
     L /= np.linalg.norm(L)
     new_z = L
     # Find new x-axis: choose any vector perpendicular to new_z
@@ -55,18 +59,18 @@ def align_axis(snap_id: int, array: np.ndarray) -> np.ndarray:
     array[:,:3] = array[:,:3] @ rotation_matrix
     return array
 
-def convert_stellar(snap_id=600, rotate=True, r_max=30*u.kpc):
+def convert_stellar(galaxy, snap_id=600, rotate=True, r_max=30*u.kpc):
     
     logging.info('Converting stellar particles...')
-    fs = get_data(snap_id)
+    fs = get_data(galaxy, snap_id)
     units = get_units(fs[0])
     code_mass = units[0]
     code_length = units[1]
     code_velocity = units[2]
-    center = get_center(snap_id)*code_length
+    center = get_center(galaxy, snap_id)*code_length
     output = np.concatenate([convert_stellar_onefile(f, center, r_max) for f in fs], axis=0)
     if rotate:
-        output = align_axis(snap_id, output)
+        output = align_axis(galaxy, snap_id, output)
     
     # Calculate the stellar smoothing length
     N_enclose = 32
@@ -166,17 +170,17 @@ def convert_stellar_onefile(f,
 
     return output
 
-def convert_gas(snap_id=600, rotate=True, r_max=30*u.kpc):
+def convert_gas(galaxy, snap_id=600, rotate=True, r_max=30*u.kpc):
     logging.info('Converting gas particles...')
-    fs = get_data(snap_id)
+    fs = get_data(galaxy, snap_id)
     units = get_units(fs[0])
     code_mass = units[0]
     code_length = units[1]
     code_velocity = units[2]
-    center = get_center(snap_id)*code_length
+    center = get_center(galaxy, snap_id)*code_length
     output = np.concatenate([convert_gas_onefile(f, center, r_max) for f in fs], axis=0)
     if rotate:
-        output = align_axis(snap_id, output)
+        output = align_axis(galaxy, snap_id, output)
     header = open('/tscc/lustre/ddn/scratch/yel051/My_Plugin/skirt/skirt_header_gas.txt', 'r').read()
     np.savetxt("gas.txt", output, delimiter=" ", header=header)
 
