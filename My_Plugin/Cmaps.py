@@ -2,7 +2,7 @@ import yt
 
 def get_cmap(field):
     cmap_dict = {
-        ('gas', 'density'): 'Spectral_r',
+        ('gas', 'density'): 'inferno',
         ('gas', 'temperature'): 'gist_heat',
         ('gas', 'Internal_energy_density'): 'gist_heat',
         ('gas', 'CR_energy_density'): 'inferno',

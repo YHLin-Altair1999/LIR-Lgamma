@@ -51,9 +51,21 @@ def get_angular_momentum(galaxy: str, snap_id: int) -> list:
 def get_snap_path(name: str, snap: int) -> str:
     paths = {
         'm12i_cd': f'/tscc/lustre/ddn/scratch/yul232/m12i_cr_700/output/snapdir_{snap:03d}/', # constant diffusion
-        'm12i_et': f'/tscc/lustre/ddn/scratch/yel051/snapshots/new_cr_runs/mode1_v1000_AlfC00/snapdir_{snap:03d}/', # extrinsic turbulence
-        'm12i_sc_fx10': f'/tscc/lustre/ddn/scratch/yel051/snapshots/new_cr_runs/mode6_v500_vAion_fx10/snapdir_{snap:03d}/', # self confinement
-        'm12i_sc_fx100': f'/tscc/lustre/ddn/scratch/yel051/snapshots/new_cr_runs/mode6_v500_vAion_fx100/snapdir_{snap:03d}/' # self confinement
+        'm12i_et': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_new_cr_runs/mode1_v1000_AlfC00/snapdir_{snap:03d}/', # extrinsic turbulence
+        'm12i_sc_fx10': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_new_cr_runs/mode6_v500_vAion_fx10/snapdir_{snap:03d}/', # self confinement
+        'm12i_sc_fx100': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_new_cr_runs/mode6_v500_vAion_fx100/snapdir_{snap:03d}/', # self confinement
+        'm11f_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11f/m11f_cr_700_mass_7000/snapdir_{snap:03d}/',
+        'm11f_sc_fcas50': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11f/m11f_sc_fcas50/snapdir_{snap:03d}/',
+        'm11f_et_AlfvenMax': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11f/m11f_et_AlfvenMax/snapdir_{snap:03d}/',
+        'm11f_et_FastMax': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11f/m11f_et_FastMax/snapdir_{snap:03d}/',
+        'm11b_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11b_cr_700/output/snapdir_{snap:03d}/',
+        'm11c_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11c_cr_700/output/snapdir_{snap:03d}/',
+        'm11d_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11d_cr_700/output/snapdir_{snap:03d}/',
+        'm11g_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11g_cr_700/output/snapdir_{snap:03d}/',
+        'm11h_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11h_cr_700/output/snapdir_{snap:03d}/',
+        'm11v_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11v_cr_700/output/snapdir_{snap:03d}/',
+        'm10v_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m10v_cr_700/output/snapdir_{snap:03d}/',
+        'm09_cd' : f'/tscc/lustre/ddn/scratch/yel051/snapshots/m09_cr_700/output/snapdir_{snap:03d}/',
     }
     path = paths[name]
     #if len(list(glob(os.path.join(path, '*.hdf5')))) == 1:

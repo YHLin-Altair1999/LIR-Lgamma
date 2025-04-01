@@ -10,11 +10,12 @@ from glob import glob
 import logging
 from gizmo_analysis import gizmo_star
 import os
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 logging.basicConfig(level=logging.INFO)
 plt.rcParams.update({
     "text.usetex": True,
     "text.latex.preamble": r"\usepackage{amsmath}",
-    #'font.family': 'STIXGeneral'
+    'font.family': 'serif'
     })
 
 def get_units(f):
@@ -32,9 +33,9 @@ def get_units(f):
 def get_data(galaxy, snap=600):
     # Load the file
     target = os.path.join(get_snap_path(galaxy, snap), '*.hdf5')
-    print(target)
+    print('The target folder is', target)
     fnames = list(glob(target))
-    print(fnames)
+    print('The hdf5 files are', fnames)
     fs = [h5py.File(fname, 'r') for fname in fnames]
     return fs
 
@@ -102,18 +103,43 @@ def convert_stellar(galaxy, snap_id=600, rotate=True, r_max=30*u.kpc):
     header = open('/tscc/lustre/ddn/scratch/yel051/My_Plugin/skirt/skirt_header_stars.txt', 'r').read()
     np.savetxt("stars.txt", output, delimiter=" ", header=header)
 
-    fig, axes = plt.subplots(ncols=3, figsize=(12,4))
+    # Caution! Removing old stars for investigating issue with m12i_sc
+    #output = output[output[:,6]<0.1]
+
+    fig, axes = plt.subplots(ncols=3, figsize=(9,3), sharey=True)
+    plt.subplots_adjust(left=0.08, right=0.85, wspace=0.)
     slice_part_xy = output[np.abs(output[:,2])<output[:,3]]
     slice_part_yz = output[np.abs(output[:,0])<output[:,3]]
     slice_part_xz = output[np.abs(output[:,1])<output[:,3]]
-    axes[0].scatter(slice_part_xy[:,0], slice_part_xy[:,1], s=0.1)
-    axes[1].scatter(slice_part_yz[:,1], slice_part_yz[:,2], s=0.1)
-    axes[2].scatter(slice_part_xz[:,0], slice_part_xz[:,2], s=0.1)
+    
+    cmap = plt.get_cmap('Spectral_r')
+    age_min = 1e-1 # Gyr
+    age_max = 1e1 # Gyr
+    xyplane = axes[0].scatter(
+        slice_part_xy[:,0], slice_part_xy[:,1], 
+        s=1, alpha=0.1, edgecolor='None',
+        c=cmap(np.log10(output[:,6][np.abs(output[:,2])<output[:,3]]))
+        )
+    yzplane = axes[1].scatter(
+        slice_part_yz[:,1], slice_part_yz[:,2], 
+        s=1, alpha=0.1, edgecolor='None', 
+        c=cmap(np.log10(output[:,6][np.abs(output[:,0])<output[:,3]]))
+        )
+    xzplane = axes[2].scatter(
+        slice_part_xz[:,0], slice_part_xz[:,2], 
+        s=1, alpha=0.1, edgecolor='None', 
+        c=cmap(np.log10(output[:,6][np.abs(output[:,1])<output[:,3]]))
+        )
+    norm = plt.Normalize(vmin=np.log10(age_min), vmax=np.log10(age_max)) 
+    cbar_ax = fig.add_axes([0.87, 0.11, 0.02, 0.78])  # Adjust position as needed
+    cbar = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=cmap), cax=cbar_ax)
+    cbar.set_label('log(Age/Gyr)')  # Set a label for the colorbar
+    box_size = 2.5e4
     for ax in axes:
-        ax.set_xlim(-2.5e4,2.5e4)
-        ax.set_ylim(-2.5e4,2.5e4)
+        ax.set_xlim(-box_size/2,box_size/2)
+        ax.set_ylim(-box_size/2,box_size/2)
         ax.set_aspect('equal')
-    fig.savefig('star_particle_slice.png', dpi=300)
+    fig.savefig('star_particle_slice.jpg', dpi=300)
     plt.close()
     return
 

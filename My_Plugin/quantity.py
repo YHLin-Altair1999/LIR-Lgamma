@@ -13,6 +13,7 @@ import astropy.constants as c
 import h5py
 from glob import glob
 import os
+from tqdm import tqdm
 
 def L_IR(fname, band=np.array([8,1000])*u.micron):
     '''
@@ -79,6 +80,47 @@ def L_gamma_YHLin_onefile(f, center, aperture=25*u.kpc):
     L_gamma_onefile = np.sum(dL_gamma[r < aperture])
     return L_gamma_onefile.to('erg/s')
 
+def L_gamma_make_one_profile(galaxy: str, snap: int, rs):
+    '''
+    make the gamma ray luminosity profile of a given galaxy snapshot
+    '''
+    
+    profile = np.zeros((rs.shape[0], 2))
+    profile[:,0] = rs.to('cm').value
 
+    print('Calculating gamma ray luminosity using custom built functions...')
+    fnames = glob(os.path.join(get_snap_path(galaxy, snap), '*.hdf5'))
+    print('The files are', fnames)
+    fs = [h5py.File(fname, 'r') for fname in fnames]
+    center = get_center(galaxy, snap)
+    
+    for f in fs:
+        units = get_units(f)
+        code_mass = units[0]
+        code_length = units[1]
+        code_velocity = units[2]
+
+        r = np.linalg.norm(f['PartType0']['Coordinates'][:,:]*code_length - np.array(center)*code_length, axis=1)
+        beta_pi = 0.7
+        x_e = f['PartType0']['ElectronAbundance'][:]
+        f_Hydrogen = 1 - f['PartType0']['Metallicity'][:,1] - f['PartType0']['Metallicity'][:,0]
+        E_cr = f['PartType0']['CosmicRayEnergy'] * code_mass * code_velocity**2
+        density = f['PartType0']['Density'] * code_mass / code_length**3
+        mass = f['PartType0']['Masses'] * code_mass
+        volume = mass / density
+        
+        n_n =  density / c.m_p # thermal nucleon number density
+        e_cr = E_cr / volume # CR energy density
+        
+        Gamma_cr_had = 5.8e-16 * e_cr.to('erg*cm**-3').value * n_n.to('cm**-3').value * u.erg/(u.cm**3*u.s) # equ 6
+        dL_gamma = 1/3 * beta_pi * Gamma_cr_had * volume # equ 8
+
+        for i in tqdm(range(1, rs.shape[0])):
+            profile[i,1] += np.sum(dL_gamma[(r > rs[i-1])*(r < rs[i])]).to('erg/s').value
+
+    target_folder = '/tscc/lustre/ddn/scratch/yel051/tables/Lgamma_profiles'
+    fname = os.path.join(target_folder, f'Lgamma_profile_{galaxy}_snap{snap:03d}.npy')
+    np.save(fname, profile)
+    return
 
 

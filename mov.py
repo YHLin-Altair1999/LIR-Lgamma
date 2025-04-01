@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import yt
 import os
 import argparse
+from glob import glob
 import My_Plugin.Fields as f
 from My_Plugin.Add_Fields import add_fields
 from My_Plugin.Cmaps import get_cmap
@@ -17,16 +18,12 @@ if args.np:
 else:
     num_procs = 0
 
-base_folder = '/tscc/lustre/ddn/scratch/yul232/m12i_cr_700/output'
-folders = sorted([os.path.join(base_folder, name) for name in os.listdir(base_folder) if os.path.isdir(os.path.join(base_folder, name))])
-#folders = ['/tscc/lustre/ddn/scratch/yel051/snapshots/new_cr_runs/mode1_v1000_AlfC00/snap_060/cr_Apr2019_mode1_v1000_AlfC00_snapshot_060.hdf5']
-
-galaxies = ['m12i_et', 'm12i_sc_fx100', 'm12i_sc_fx10']
-snaps = [60]
+galaxies = ['m12i_cd']
+snaps = [600]
 
 plot_types = [
     'FaceOn', 
-    'EdgeOn', 
+    #'EdgeOn', 
     #'projection', 
     #'slice'
              ]
@@ -34,30 +31,24 @@ normals = ['x', 'y', 'z']
 
 fields = [
             ('gas', 'density'),
-            ('gas', 'CR_energy_density'),
-            ('gas', 'Internal_energy_density'),
-            ('gas', 'epsilon_gamma'),
-            ('gas', 'metal_density'),
-            ('gas', 'Neutral_Hydrogen_Number_Density'),
-            ('gas', 'Compton_y'),
-            #('PartType0', 'Density'),
-            #('PartType0', 'Pressure'),
-            #('PartType0', 'Temperature'),
-            #('PartType0', 'InternalEnergy'),
-            #('PartType0', 'CosmicRayEnergy')
+            #('gas', 'CR_energy_density'),
+            #('gas', 'Internal_energy_density'),
+            #('gas', 'epsilon_gamma'),
+            #('gas', 'metal_density'),
+            #('gas', 'Neutral_Hydrogen_Number_Density'),
+            #('gas', 'Compton_y'),
             ]
 
-for galaxy in yt.parallel_objects(galaxies, num_procs):
-#for galaxy in galaxies:
+#for galaxy in yt.parallel_objects(galaxies, num_procs):
+for galaxy in galaxies:
     for snap in snaps:
         path = get_snap_path(galaxy, snap)
         fnames = list(glob(os.path.join(path, '*.hdf5')))
         if len(fnames) == 1:
             path = os.path.join(path, fnames[0])
-        ds = yt.load()
+        ds = yt.load(path)
         ds = add_fields(ds)
-        v, c = ds.find_max(("PartType0", "Metallicity_00")) # use this as a proxy when there is no info from AHF
-        snap_id = snap#int(folder.split('/')[-1].split('_')[-1])
+        #v, c = ds.find_max(("PartType0", "Metallicity_00")) # use this as a proxy when there is no info from AHF
         c = get_center(galaxy, snap)
         L = np.array(get_angular_momentum(galaxy, snap))
         L /= np.linalg.norm(L)
@@ -80,13 +71,13 @@ for galaxy in yt.parallel_objects(galaxies, num_procs):
                             plots.append(p)
                     case 'projection':
                         for normal in normals:
-                            p = yt.ProjectionPlot(ds, center=c, normal=normal, fields=field, width=(50, 'kpc'))
+                            p = yt.ProjectionPlot(ds, center=c, normal=normal, fields=field, width=(250, 'kpc'))
                             plots.append(p)
                     case 'FaceOn':
-                        p = yt.OffAxisProjectionPlot(ds, center=c, normal=new_z, fields=field, north_vector=new_x, width=(150, 'kpc'))
+                        p = yt.OffAxisProjectionPlot(ds, center=c, normal=new_z, fields=field, north_vector=new_x, width=(30, 'kpc'))
                         plots.append(p)
                     case 'EdgeOn':
-                        p = yt.OffAxisProjectionPlot(ds, center=c, normal=new_x, fields=field, north_vector=new_z, width=(150, 'kpc'))
+                        p = yt.OffAxisProjectionPlot(ds, center=c, normal=new_x, fields=field, north_vector=new_z, width=(30, 'kpc'))
                         plots.append(p)
                 for p in plots:
                     p.set_cmap(field=field, cmap=get_cmap(field))
