@@ -96,33 +96,33 @@ def main():
     global plot_types, normals, fields, gal_snap_pairs, width
     gal_snap_pairs = {
         #'m12i_cd': [600], 
-        #'m12i_et': [60], 
+        'm12i_et': [60], 
         #'m12i_sc_fx10': [60], 
         #'m12i_sc_fx100': [60],
-        'm11b_cd': [600],
-        'm11c_cd': [600],
-        'm11d_cd': [600],
+        #'m11b_cd': [600],
+        #'m11c_cd': [600],
+        #'m11d_cd': [600],
         #'m11f_cd': [600],
-        'm11g_cd': [600],
-        'm11h_cd': [600],
-        'm11v_cd': [600],
-        'm10v_cd': [600],
-        'm09_cd': [600],
+        #'m11g_cd': [600],
+        #'m11h_cd': [600],
+        #'m11v_cd': [600],
+        #'m10v_cd': [600],
+        #'m09_cd': [600],
         #'m11f_et_AlfvenMax': [600],
         #'m11f_et_FastMax': [600],
         #'m11f_sc_fcas50': [600]
         }
     width = (30, 'kpc')
     plot_types = [
-        'FaceOn', 
+        #'FaceOn', 
         #'EdgeOn', 
         #'projection',
-        #'slice'
+        'slice'
     ]
     normals = ['x', 'y', 'z']
     fields = [
-        ('gas', 'density'),
-        #('gas', 'CR_energy_density'),
+        #('gas', 'density'),
+        ('gas', 'CR_energy_density'),
         #('gas', 'Internal_energy_density'),
         #('gas', 'epsilon_gamma'),
         #('gas', 'metal_density'),
