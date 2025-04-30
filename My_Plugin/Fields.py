@@ -8,6 +8,13 @@ code_length = YTQuantity(3.09e21, 'cm')
 code_mass = YTQuantity(1.989e43, 'g')
 code_velocity = YTQuantity(1e5, 'cm/s')
 
+mass_proton = yt.utilities.physical_constants.mass_hydrogen_cgs
+mass_electron = yt.utilities.physical_constants.mass_electron_cgs
+speed_of_light = yt.utilities.physical_constants.speed_of_light_cgs
+sigma_T = yt.utilities.physical_constants.thomson_cross_section
+boltzmann_constant = yt.utilities.physical_constants.boltzmann_constant_cgs
+planck_constant = yt.utilities.physical_constants.planck_constant_cgs
+
 def volume(field, data):
     return data[('PartType0', 'Masses')] / data[('PartType0', 'Density')]
 
@@ -54,6 +61,15 @@ def epsilon_gamma(field, data):
                     YTQuantity(1, 'erg*cm**(-3)*s**(-1)'))
     epsilon_cr_had = 1/3 * beta_pi * Gamma_cr_had
     return Gamma_cr_had
+
+def Lambda_IC(field, data):
+    e_cr = 
+    rest_energy = c.m_p * c.c**2
+    energy_integral = 0.5 * \
+        sp.special.betainc((alpha_p-2)/2, (3-alpha_p)/2, 1/(1+q**2)) * \
+        sp.special.beta((alpha_p-2)/2, (3-alpha_p)/2) + \
+        q**(alpha_p-1) * (np.sqrt(1+q**2) - 1)
+    C_p = e_cr * (alpha_p - 1) / (rest_energy * energy_integral)
 
 def epsilon_gamma_incell(field, data):
     return data[('gas', 'epsilon_gamma')]*data[('gas', 'volume')]
