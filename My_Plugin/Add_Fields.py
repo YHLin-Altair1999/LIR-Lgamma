@@ -31,6 +31,12 @@ def add_fields(ds):
                     units = "eV/cm**3",
                     sampling_type = "local"
                     )
+    
+    ds.add_field(   ('gas', 'u_B'),
+                    function = f.u_B,
+                    units = "erg/cm**3",
+                    sampling_type = "local"
+                    )
 
     ds.add_field(   ('gas', 'CR_energy_density'),
                     function = f.e_cr,
@@ -58,6 +64,42 @@ def add_fields(ds):
     ds.add_field(   ('gas', 'Compton_y'),
                     function = f.Compton_y,
                     units = "cm**(-1)",
+                    sampling_type = "local"
+                    )
+    
+    ds.add_field(   ('gas', 'CRp_number_density'),
+                    function = f.CRp_number_density,
+                    units = "cm**(-3)",
+                    sampling_type = "local"
+                    )
+
+    ds.add_field(   ('gas', 'Pion_decay_gamma_ray_source_function'),
+                    function = f.s_pi,
+                    units = "cm**(-3)*GeV**(-1)*s**(-1)",
+                    sampling_type = "local"
+                    )
+
+    ds.add_field(   ('gas', 'inverse_Compton_gamma_ray_source_function'),
+                    function = f.s_IC,
+                    units = "cm**(-3)*GeV**(-1)*s**(-1)",
+                    sampling_type = "local"
+                    )
+    
+    ds.add_field(   ('gas', 'Pion_decay_gamma_ray_source_function_in_cell'),
+                    function = f.s_pi_incell,
+                    units = "GeV**(-1)*s**(-1)",
+                    sampling_type = "local"
+                    )
+                    
+    ds.add_field(   ('gas', 'inverse_Compton_gamma_ray_source_function_in_cell'),
+                    function = f.s_IC_incell,
+                    units = "GeV**(-1)*s**(-1)",
+                    sampling_type = "local"
+                    )
+                
+    ds.add_field(   ('gas', 'gas_number_density'),
+                    function = f.n_H,
+                    units = "cm**(-3)",
                     sampling_type = "local"
                     )
     return ds

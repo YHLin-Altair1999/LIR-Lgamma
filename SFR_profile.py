@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from My_Plugin.quantity import L_IR, L_gamma_yt, L_gamma_YHLin, L_gamma_make_one_profile, L_gamma_make_one_profile_Pfrommer
+import My_Plugin.quantity as q
+#from My_Plugin.quantity import L_IR, L_gamma_yt, L_gamma_YHLin, L_gamma_make_one_profile, L_gamma_make_one_profile_Pfrommer
 from My_Plugin.LoadData import get_snap_path, get_center
 import yt
 import os
@@ -19,17 +20,16 @@ plt.rcParams.update({
 def make_profiles(inputs, rs):
     for galaxy in inputs.keys():
         for snap in inputs[galaxy]:
-            L_gamma_make_one_profile_Pfrommer(galaxy, snap, rs, E_1=1*u.GeV, E_2=1000*u.GeV)
-            #L_gamma_make_one_profile(galaxy, snap, rs)
+            q.SFR_make_one_profile(galaxy, snap, rs)
 
 def plot_one_profile(ax, galaxy, snap, xunit, yunit, plot_type='cumulative'):
-    target_folder = '/tscc/lustre/ddn/scratch/yel051/tables/Lgamma_profiles'
-    fname = os.path.join(target_folder, f'Lgamma_profile_{galaxy}_snap{snap:03d}.npy')
+    target_folder = '/tscc/lustre/ddn/scratch/yel051/tables/SFR_profiles'
+    fname = os.path.join(target_folder, f'SFR_profile_{galaxy}_snap{snap:03d}.npy')
     profile = np.load(fname)
     r = profile[:,0]*u.cm
     dr = r[1]-r[0]
-    Lgamma = profile[:,1]*u.erg/u.s
-    L_gamma_cumulative = np.cumsum(Lgamma)
+    SFR = profile[:,1]*u.M_sun/u.yr
+    SFR_cumulative = np.cumsum(SFR)
 
     if galaxy.startswith('m12i_'):
         linestyle = 'solid'
@@ -37,31 +37,32 @@ def plot_one_profile(ax, galaxy, snap, xunit, yunit, plot_type='cumulative'):
         linestyle = 'dashed'
     if plot_type == 'cumulative':
         ax.semilogy(
-            r.to(xunit).value, L_gamma_cumulative.to(yunit).value,
+            r.to(xunit).value, SFR_cumulative.to(yunit).value,
             linestyle=linestyle, label=f'{galaxy}')
     elif plot_type == 'differential':
         ax.semilogy(
-            r.to(xunit).value, Lgamma.to(yunit).value/dr.to(xunit).value, 
+            r.to(xunit).value, SFR.to(yunit).value/dr.to(xunit).value, 
             linestyle=linestyle, label=f'{galaxy}')
-
+    else:
+        raise ValueError("plot_type must be 'cumulative' or 'differential'")
     return ax
 
 def plot_profiles(inputs, plot_type='cumulative'):
     fig, ax = plt.subplots(figsize=(6,4))
     xunit = u.kpc
-    yunit = u.erg/u.s
+    yunit = u.M_sun/u.yr
     for galaxy in tqdm(inputs.keys()):
         for snap in inputs[galaxy]:
-            plot_one_profile(ax, galaxy, snap, xunit=xunit, yunit=yunit)
+            plot_one_profile(ax, galaxy, snap, xunit=xunit, yunit=yunit, plot_type=plot_type)
     xmin = 0.0*u.kpc / xunit
     ax.set_xlim(left=xmin)
     #ax.set_ylim(bottom=1e38)
     ax.set_xlabel(rf'$r ~({{\rm {str(xunit)}}})$')
-    ax.set_ylabel(rf'$L_{{\gamma}} ~({{\rm {str(yunit)}}})$')
-    ax.set_title(rf'Cumulative pionic $\gamma$-ray luminosity ($E_\gamma > 1$ GeV)')
+    ax.set_ylabel(rf'SFR $({{\rm {str(yunit)}}})$')
+    ax.set_title(rf'SFR profile')
     ax.legend()
     plt.tight_layout()
-    fig.savefig('Lgamma_profile.png', dpi=300)
+    fig.savefig('SFR_profile.png', dpi=300)
     return
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@
             <ExtragalacticUnits wavelengthOutputStyle="Wavelength" fluxOutputStyle="Frequency"/>
         </units>
         <cosmology type="Cosmology">
-            <FlatUniverseCosmology redshift="0.1" reducedHubbleConstant="0.702" matterDensityFraction="0.28"/>
+            <FlatUniverseCosmology redshift="0.0" reducedHubbleConstant="0.702" matterDensityFraction="0.28"/>
         </cosmology>
         <sourceSystem type="SourceSystem">
             <SourceSystem minWavelength="0.09 micron" maxWavelength="1e1 micron" wavelengths="0.55 micron" sourceBias="0.5">
@@ -60,7 +60,7 @@
                     </DustEmissionOptions>
                 </dustEmissionOptions>
                 <media type="Medium">
-                    <ParticleMedium filename="gas.txt" massType="Mass" massFraction="0.5" importMetallicity="true" importTemperature="true" maxTemperature="1e5 K" importVelocity="false" importMagneticField="false" importVariableMixParams="false" useColumns="">
+                    <ParticleMedium filename="gas.txt" massType="Mass" massFraction="1" importMetallicity="true" importTemperature="true" maxTemperature="1e5 K" importVelocity="false" importMagneticField="false" importVariableMixParams="false" useColumns="">
                         <smoothingKernel type="SmoothingKernel">
                             <CubicSplineSmoothingKernel/>
                         </smoothingKernel>

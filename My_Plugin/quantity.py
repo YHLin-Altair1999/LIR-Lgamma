@@ -13,6 +13,7 @@ from glob import glob
 import os
 from tqdm import tqdm
 import scipy as sp
+from astropy.cosmology import FlatLambdaCDM
 
 def L_IR(fname, band=np.array([8,1000])*u.micron):
     '''
@@ -24,8 +25,10 @@ def L_IR(fname, band=np.array([8,1000])*u.micron):
     F_nu = np.array(df['total'])*u.Jy
     L_nu = 4*np.pi*d**2*F_nu
     wav = np.array(df['wavelength'])*u.micron
-    nu = c.c/wav
-    L_IR = -simpson(L_nu.to('erg/(s*Hz)').value, x=nu.to('Hz').value)*u.erg/u.s
+    wav_integrate = np.logspace(np.log10(band[0].to('micron').value), np.log10(band[1].to('micron').value), 100)*u.micron
+    L_nu_integrate = np.interp(wav_integrate.value, wav.value, L_nu.value)*L_nu.unit
+    nu = c.c/wav_integrate
+    L_IR = -simpson(L_nu_integrate.to('erg/(s*Hz)').value, x=nu.to('Hz').value)*u.erg/u.s
     return L_IR
 
 def L_gamma_yt(ds, center, aperture):
@@ -214,5 +217,37 @@ def L_gamma_make_one_profile_Pfrommer(
 
     target_folder = '/tscc/lustre/ddn/scratch/yel051/tables/Lgamma_profiles'
     fname = os.path.join(target_folder, f'Lgamma_profile_{galaxy}_snap{snap:03d}.npy')
+    np.save(fname, profile)
+    return
+
+def SFR_make_one_profile(
+        galaxy: str, snap: int, rs, 
+        ):
+    '''
+    make the gamma ray luminosity profile of a given galaxy snapshot
+    '''
+    
+    profile = np.zeros((rs.shape[0], 2))
+    profile[:,0] = rs.to('cm').value
+
+    fnames = glob(os.path.join(get_snap_path(galaxy, snap), '*.hdf5'))
+    print('The files are', fnames)
+    fs = [h5py.File(fname, 'r') for fname in fnames]
+    center = get_center(galaxy, snap)
+    
+    for f in fs:
+        units = get_units(f)
+        code_mass = units[0]
+        code_length = units[1]
+        code_velocity = units[2]
+
+        r = np.linalg.norm(f['PartType0']['Coordinates'][:,:]*code_length - np.array(center)*code_length, axis=1)
+        SFR = f['PartType0']['StarFormationRate']*u.M_sun/u.yr
+
+        for i in tqdm(range(1, rs.shape[0])):
+            profile[i,1] += np.sum(SFR[(r > rs[i-1])*(r < rs[i])]).to('M_sun/yr').value
+
+    target_folder = '/tscc/lustre/ddn/scratch/yel051/tables/SFR_profiles'
+    fname = os.path.join(target_folder, f'SFR_profile_{galaxy}_snap{snap:03d}.npy')
     np.save(fname, profile)
     return

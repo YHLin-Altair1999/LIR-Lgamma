@@ -258,6 +258,10 @@ def convert_gas_onefile(f,
     Note: we are only using metallicity 00
     '''
     metallicity = np.array(f['PartType0']['Metallicity'])[:,0]
+    Oxygen_number_fraction = np.array(f['PartType0']['Metallicity'])[:,4] / 16
+    Hydrogen_number_fraction = np.array(f['PartType0']['Metallicity'])[:,1] / 1
+    nO_nH_ratio = Oxygen_number_fraction / Hydrogen_number_fraction
+    dust_to_gas_ratio = Dust_to_gas_ratio_RemyRuyer(nO_nH_ratio) 
     
     # Column 7: temperature
     '''
@@ -277,8 +281,27 @@ def convert_gas_onefile(f,
     output[:,:3] = coords.to('pc').value
     output[:,3] = l_smooth.to('pc').value
     output[:,4] = mass.to('M_sun').value
-    output[:,5] = metallicity
+    #output[:,5] = metallicity
+    output[:,5] = dust_to_gas_ratio
     output[:,6] = temperature.to('K').value
     output = output[r<r_max]
 
     return output
+
+def Dust_to_gas_ratio_RemyRuyer(nO_nH_ratio):
+    '''
+    From Rémy-Ruyer et al. (2014): https://www.aanda.org/articles/aa/full_html/2014/03/aa22803-13/aa22803-13.html
+    Using the broken power-law fit with X_{CO, Z}
+    '''
+    x = 12 + np.log10(nO_nH_ratio)
+
+    a = 2.21
+    alpha_H = 1.00
+    b = 0.96
+    alpha_L = 3.10
+    x_t = 8.10
+    x_sun = 8.69
+    
+    y = (x > x_t)*(a + alpha_H*(x_sun - x)) + (x <= x_t)*(b + alpha_L*(x_sun - x))
+    G_D_ratio = 10**y
+    return 1/G_D_ratio

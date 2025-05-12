@@ -45,7 +45,8 @@ def get_center(galaxy: str, snap_id: int) -> list:
 def get_angular_momentum(galaxy: str, snap_id: int) -> list:
     df = load_snap(galaxy, snap_id)
     halo1 = df.iloc[0,:]
-    out = list(halo1[['Lx_star(68)', 'Ly_star(69)', 'Lz_star(70)']])
+    #out = list(halo1[['Lx_star(68)', 'Ly_star(69)', 'Lz_star(70)']])
+    out = list(halo1[['Lx_gas(48)', 'Ly_gas(49)', 'Lz_gas(50)']])
     return out
 
 def get_snap_path(name: str, snap: int) -> str:
