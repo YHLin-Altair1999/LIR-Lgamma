@@ -24,7 +24,7 @@ class SFR_LIR_Plot:
         self.table_path = table_path
         self.aperture = aperture
         # Create LIR_Lgamma_Plot instance to use its LIR calculation method
-        self.lir_calculator = LIR_Lgamma_Plot(aperture=aperture)
+        self.lir_calculator = LIR_Lgamma_Plot()
         
     def make_table(self, galaxy, snaps, table_path=None, aperture=None):
         """Create a new table with SFR and LIR values"""
