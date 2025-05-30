@@ -14,22 +14,61 @@ import os
 from tqdm import tqdm
 import scipy as sp
 from astropy.cosmology import FlatLambdaCDM
+from gizmo_analysis import gizmo_star
 
-def L_IR(fname, band=np.array([8,1000])*u.micron):
+def L_IR(fname, wav_min=8*u.micron, wav_max=1000*u.micron):
     '''
     Calculate the total IR luminosity from SKIRT-generated SED files.
+    Automatically extracts column information, units, and distance from file header.
+    
+    Parameters:
+    -----------
+    fname : str
+        Path to the SKIRT SED file
+    band : astropy.units.Quantity
+        Wavelength range for integration, default is [8, 1000] micron
+        
+    Returns:
+    --------
+    L_IR : astropy.units.Quantity
+        Total infrared luminosity in erg/s
     '''
-    names = ['wavelength', 'total', 'transparent', 'direct', 'scattered', 'direct secondary', 'scattered secondary', 'transparent secondary']
-    df = pd.read_csv(fname, names=names, skiprows=9, sep=' ')
-    d = 1*u.Mpc
-    F_nu = np.array(df['total'])*u.Jy
+    # Read header to extract metadata
+    header_lines = []
+    with open(fname, 'r') as f:
+        for i, line in enumerate(f):
+            if line.startswith('#'):
+                header_lines.append(line.strip())
+                if i >= 15:  # Assume header is no more than 15 lines
+                    print('Header seems a bit too long, might want to check.')
+            else:
+                break
+    
+    # Extract distance information from header
+    distance_line = [line for line in header_lines if "distance" in line][0]
+    distance_value = float(distance_line.split()[-2])
+    distance_unit = distance_line.split()[-1]
+    d = distance_value * u.Unit(distance_unit)
+    
+    # Extract column names from header
+    column_info = [line for line in header_lines if "column" in line]
+    names = ['wavelength']
+    for line in column_info[1:]:  # First column is wavelength
+        name = line.split(':')[1].split(';')[0].strip()
+        names.append(name)  # Extract the first word (e.g., "total" from "total flux")
+    
+    # Read data with extracted column names
+    df = pd.read_csv(fname, names=names, comment='#', sep=' ')
+    
+    # Calculate luminosity
+    F_nu = np.array(df['total flux'])*u.Jy
     L_nu = 4*np.pi*d**2*F_nu
     wav = np.array(df['wavelength'])*u.micron
-    wav_integrate = np.logspace(np.log10(band[0].to('micron').value), np.log10(band[1].to('micron').value), 100)*u.micron
+    wav_integrate = np.logspace(np.log10(wav_min.value), np.log10(wav_max.value), 100)*wav_min.unit
     L_nu_integrate = np.interp(wav_integrate.value, wav.value, L_nu.value)*L_nu.unit
     nu = c.c/wav_integrate
-    L_IR = -simpson(L_nu_integrate.to('erg/(s*Hz)').value, x=nu.to('Hz').value)*u.erg/u.s
-    return L_IR
+    L_IR = -simpson(L_nu_integrate.value, x=nu.value) * (L_nu_integrate.unit * nu.unit)
+    return L_IR.to('erg/s')
 
 def L_gamma_yt(ds, center, aperture):
     ds = add_fields(ds)
@@ -193,7 +232,7 @@ def L_gamma_make_one_profile_Pfrommer(
         interaction_factor = sigma_pp*n_n/(c.m_p*c.c)
         normalization = 16*C_p/(3*alpha_p)
 
-        print(energy_ratio.shape, energy_term.shape, interaction_factor.shape, normalization.shape)
+        #print(energy_ratio.shape, energy_term.shape, interaction_factor.shape, normalization.shape)
         # Calculate pion-decay gamma-ray luminosity
         s_pi = normalization[:, np.newaxis] * interaction_factor[:, np.newaxis] * mass_ratio * energy_term
 
@@ -221,7 +260,7 @@ def L_gamma_make_one_profile_Pfrommer(
     return
 
 def SFR_make_one_profile(
-        galaxy: str, snap: int, rs, 
+        galaxy: str, snap: int, rs, sfr_type='FIR'
         ):
     '''
     make the gamma ray luminosity profile of a given galaxy snapshot
@@ -241,8 +280,44 @@ def SFR_make_one_profile(
         code_length = units[1]
         code_velocity = units[2]
 
-        r = np.linalg.norm(f['PartType0']['Coordinates'][:,:]*code_length - np.array(center)*code_length, axis=1)
-        SFR = f['PartType0']['StarFormationRate']*u.M_sun/u.yr
+        cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
+        
+        def _get_sfr_from_stars(f, center, code_mass, code_length, tau_sfr=10*u.Myr):
+            cosmo = FlatLambdaCDM(
+                    H0 = f['Header'].attrs.get('HubbleParam')*100*u.km/(u.s*u.Mpc),
+                    Om0 = f['Header'].attrs.get('Omega0')
+                    )
+            z_now = f['Header'].attrs.get('Redshift')
+            t_now = cosmo.lookback_time(z_now)
+            a_sf  = np.array(f['PartType4']['StellarFormationTime'])
+            z_sf  = 1/a_sf - 1
+            t_sf  = cosmo.lookback_time(z_sf)
+            age   = (t_sf - t_now).to('Gyr')
+            mass = np.array(f['PartType4']['Masses'])*code_mass
+            metallicity = np.array(f['PartType4']['Metallicity'])[:,0]
+            
+            mask = age > tau_sfr
+
+            mass_loss = gizmo_star.MassLossClass('fire2')
+            mass_loss_frac = mass_loss.get_mass_loss_from_spline(
+                                                age.to('Gyr').value, # note that age is defined in Gyr
+                                                metallicities=metallicity/0.02
+                                                )
+            mass_formed = mass / (1 - mass_loss_frac)
+            mass_formed[mask] = 0
+            SFR = mass_formed / tau_sfr
+            return SFR
+
+        match sfr_type:
+            case 'gas':
+                r = np.linalg.norm(f['PartType0']['Coordinates'][:,:]*code_length - np.array(center)*code_length, axis=1)
+                SFR = f['PartType0']['StarFormationRate']*u.M_sun/u.yr
+            case 'Ha':
+                r = np.linalg.norm(f['PartType4']['Coordinates'][:,:]*code_length - np.array(center)*code_length, axis=1)
+                SFR = _get_sfr_from_stars(f, center, code_mass, code_length, tau_sfr=2*u.Myr)
+            case 'FIR':
+                r = np.linalg.norm(f['PartType4']['Coordinates'][:,:]*code_length - np.array(center)*code_length, axis=1)
+                SFR = _get_sfr_from_stars(f, center, code_mass, code_length, tau_sfr=100*u.Myr)
 
         for i in tqdm(range(1, rs.shape[0])):
             profile[i,1] += np.sum(SFR[(r > rs[i-1])*(r < rs[i])]).to('M_sun/yr').value
@@ -251,3 +326,4 @@ def SFR_make_one_profile(
     fname = os.path.join(target_folder, f'SFR_profile_{galaxy}_snap{snap:03d}.npy')
     np.save(fname, profile)
     return
+

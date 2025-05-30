@@ -500,6 +500,18 @@ class LIR_Lgamma_Plot:
                 self._plot_fit_result(ax, self.obs_fit_result, color='gray', 
                                      label='Observation fit')
         
+        calorimetric_limit_FIR = self.x_range * u.Lsun  # Calorimetric FIR luminosity
+        epsilon = 0.79
+        calorimetric_limit_sfr = calorimetric_limit_FIR/u.Lsun * epsilon * 1.7e-10  * u.M_sun / u.yr # SFR in M_sun/yr
+        calorimetric_limit_Lgamma = 6.7e39 * calorimetric_limit_sfr.to(u.Msun/u.yr).value * u.erg/u.s
+
+        ax.plot(
+            calorimetric_limit_FIR.to('L_sun').value,
+            calorimetric_limit_Lgamma.to('erg/s').value,
+            color='black', linestyle=':', linewidth=1.5, alpha=0.8,
+            label='Calorimetric limit'
+        )
+
         # Configure the main axis
         ax.set_xscale('log')
         ax.set_yscale('log')
@@ -524,7 +536,7 @@ def main():
         'm11g_cd': [600],
         'm11h_cd': [600],
         'm11v_cd': [600],
-        #'m10v_cd': [600],
+        'm10v_cd': [600],
         #'m09_cd': [600],
         'm11f_et_AlfvenMax': [600],
         'm11f_et_FastMax': [600],

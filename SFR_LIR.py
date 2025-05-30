@@ -53,11 +53,6 @@ class SFR_LIR_Plot:
         df = pd.DataFrame(data)
         df = df.sort_values(by=['galaxy', 'snap'])
         
-        # Create directory if it doesn't exist
-        os.makedirs(os.path.dirname(table_path), exist_ok=True)
-        
-        # Save the DataFrame to CSV
-        df.to_csv(table_path, index=False, mode='w')  # 'w' mode to overwrite
         return df
     
     def get_marker(self, galaxy: str) -> str:
@@ -98,8 +93,14 @@ class SFR_LIR_Plot:
                 return None, None
         
         # Create the plot
-        fig, ax = plt.subplots(figsize=(5, 4))
+        fig, axes = plt.subplots(
+            figsize=(5, 5), nrows=2, ncols=1, sharex=True, sharey=False,
+            gridspec_kw={'height_ratios': [3, 1], 'hspace': 0}
+            )
         
+
+        ax = axes[0]
+
         # Plot each galaxy
         for i in range(df.shape[0]):
             galaxy = df['galaxy'].iloc[i]
@@ -111,23 +112,44 @@ class SFR_LIR_Plot:
                 s=60, alpha=0.8, edgecolor='None',
                 #label=galaxy if i == df['galaxy'].tolist().index(galaxy) else ""
             )
+            # Add galaxy name annotation beside each data point
+            ax.annotate(
+                galaxy, 
+                (df['SFR (M_sun/yr)'].iloc[i], df['L_IR (L_sun)'].iloc[i]),
+                xytext=(5, 0),  # Small offset from the point
+                textcoords='offset points',
+                fontsize=8,
+                color=self.get_color(galaxy)
+            )
         
-        SFR_range = np.logspace(-3, 1, 100)*u.Msun/u.yr
-        epsilon = 0.79
-        LIR_Kennicutt = (SFR_range/(u.M_sun/u.yr))/(epsilon*1.7e-10)*u.L_sun
-        #LIR_Kennicutt = (SFR_range/(u.Msun/u.yr))*5.8e9*u.L_sun
+        def SFR2LIR(SFR, epsilon=0.79):
+            """Convert SFR to LIR using the Kennicutt relation"""
+            return (SFR/(u.Msun/u.yr))/(epsilon*1.7e-10)*u.L_sun
+
+        SFR_range = np.logspace(-5, 1, 100)*u.Msun/u.yr
+        LIR_Kennicutt = SFR2LIR(SFR_range)
 
         ax.plot(
             SFR_range.to('M_sun/yr').value, 
             LIR_Kennicutt.to('L_sun').value, 
             color='k', linestyle='--', label=r'Kennicutt (1998)'
             )
+
+        # Using Bonato et al. (2024) equ. 2
+        def SFR2LIR_Bonato(SFR):
+            return (SFR.to('M_sun*yr**-1').value*10**(7.81))**(1/0.8)*u.L_sun
+        
+        LIR_Bonato = SFR2LIR_Bonato(SFR_range)
+        ax.plot(
+            SFR_range.to('M_sun/yr').value,
+            LIR_Bonato.to('L_sun').value,
+            color='k', linestyle='dotted', label=r'Bonato et al. (2024)'
+            )
         
         # Set axis labels and scales
         ax.set_xscale('log')
         ax.set_yscale('log')
-        ax.set_ylim(1e7, 1e11)
-        ax.set_xlabel(r'$\mathrm{SFR}~(M_\odot/\mathrm{yr})$')
+        #ax.set_ylim(1e5, 1e11)
         ax.set_ylabel(r'$L_{\rm IR, ~8-1000 ~\mu m} ~(L_\odot)$')
         
         # Add other plot elements
@@ -136,8 +158,25 @@ class SFR_LIR_Plot:
         by_label = dict(zip(labels, handles))
         ax.legend(by_label.values(), by_label.keys(), loc='best', fontsize=9)
         
+        ax2 = axes[1]
+        for i in range(df.shape[0]):
+            galaxy = df['galaxy'].iloc[i]
+            ax2.scatter(
+                df['SFR (M_sun/yr)'].iloc[i], 
+                df['L_IR (L_sun)'].iloc[i]/SFR2LIR(df['SFR (M_sun/yr)'].iloc[i]*u.M_sun/u.yr).to('L_sun').value, 
+                marker=self.get_marker(galaxy=galaxy), 
+                color=self.get_color(galaxy), 
+                s=60, alpha=0.8, edgecolor='None',
+                #label=galaxy if i == df['galaxy'].tolist().index(galaxy) else ""
+            )
+        ax2.set_xscale('log')
+        ax2.set_yscale('log')
+        ax2.set_xlabel(r'$\mathrm{SFR}~(M_\odot/\mathrm{yr})$')
+        ax2.axhline(1, color='k', linestyle='--', label=r'$L_{\rm IR}/L_{\rm IR, Kennicutt} = 1$')
+        ax2.set_ylabel(r'$L_{\rm IR}/L_{\rm IR, Kennicutt}$')
+
         plt.tight_layout()
-        plt.savefig('SFR-LIR.png', dpi=300)
+        fig.savefig('SFR-LIR.png', dpi=300)
         
         return fig, ax
     
@@ -152,6 +191,10 @@ class SFR_LIR_Plot:
         # Combine data if multiple galaxies were processed
         if all_data:
             combined_df = pd.concat(all_data)
+            # Create directory if it doesn't exist
+            os.makedirs(os.path.dirname(self.table_path), exist_ok=True)
+            # Save the DataFrame to CSV
+            combined_df.to_csv(self.table_path, index=False, mode='w')  # 'w' mode to overwrite
             # Plot the data
             self.plot(combined_df)
         else:

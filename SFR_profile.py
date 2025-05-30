@@ -17,10 +17,10 @@ plt.rcParams.update({
     "font.family": "serif"
     }) 
 
-def make_profiles(inputs, rs):
+def make_profiles(inputs, rs, sfr_type='FIR'):
     for galaxy in inputs.keys():
         for snap in inputs[galaxy]:
-            q.SFR_make_one_profile(galaxy, snap, rs)
+            q.SFR_make_one_profile(galaxy, snap, rs, sfr_type=sfr_type)
 
 def plot_one_profile(ax, galaxy, snap, xunit, yunit, plot_type='cumulative'):
     target_folder = '/tscc/lustre/ddn/scratch/yel051/tables/SFR_profiles'
@@ -56,11 +56,11 @@ def plot_profiles(inputs, plot_type='cumulative'):
             plot_one_profile(ax, galaxy, snap, xunit=xunit, yunit=yunit, plot_type=plot_type)
     xmin = 0.0*u.kpc / xunit
     ax.set_xlim(left=xmin)
-    #ax.set_ylim(bottom=1e38)
-    ax.set_xlabel(rf'$r ~({{\rm {str(xunit)}}})$')
-    ax.set_ylabel(rf'SFR $({{\rm {str(yunit)}}})$')
+    ax.set_ylim(1e-5, 3e0)
+    ax.set_xlabel(rf'Radius ~({xunit.to_string('latex_inline')})')
+    ax.set_ylabel(rf'SFR ~({yunit.to_string('latex_inline')})')
     ax.set_title(rf'SFR profile')
-    ax.legend()
+    #ax.legend()
     plt.tight_layout()
     fig.savefig('SFR_profile.png', dpi=300)
     return
@@ -84,8 +84,8 @@ if __name__ == '__main__':
         'm11f_et_FastMax': [600],
         'm11f_sc_fcas50': [600]
         }
-    rs = np.linspace(0, 25, 200)*u.kpc
+    rs = np.linspace(0, 25, 50)*u.kpc
     #rs = np.logspace(-5, 1, 20)*u.kpc
-    make_profiles(inputs, rs)
-    #plot_profiles(inputs)
+    make_profiles(inputs, rs, sfr_type='FIR')
+    plot_profiles(inputs, plot_type='cumulative')
 

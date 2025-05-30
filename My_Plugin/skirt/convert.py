@@ -25,8 +25,8 @@ def get_units(f):
     a = 1/(1+z) # the scale factor
 
     # Check http://www.tapir.caltech.edu/~phopkins/Site/GIZMO_files/gizmo_documentation.html#units
-    code_mass = 1e10*u.M_sun
-    code_length = 1e0*u.kpc*a
+    code_mass = 1e10*u.M_sun/h
+    code_length = 1e0*u.kpc*a/h
     code_velocity = 1*u.km/u.s*np.sqrt(a)
     return [code_mass, code_length, code_velocity]
 
@@ -167,7 +167,7 @@ def convert_stellar_onefile(f,
     # Column 5: initial mass (Msun)
     '''
     In FIRE snapshots the mass of the stellar particles are their current mass.
-    We will adjust for the mass loss a bit later.
+    We will adjust for the mass loss a bit later in the convert_stellar function.
     '''
     mass = np.array(f['PartType4']['Masses'])*code_mass
     
@@ -261,7 +261,18 @@ def convert_gas_onefile(f,
     Oxygen_number_fraction = np.array(f['PartType0']['Metallicity'])[:,4] / 16
     Hydrogen_number_fraction = np.array(f['PartType0']['Metallicity'])[:,1] / 1
     nO_nH_ratio = Oxygen_number_fraction / Hydrogen_number_fraction
-    dust_to_gas_ratio = Dust_to_gas_ratio_RemyRuyer(nO_nH_ratio) 
+    dust_to_gas_ratio = Dust_to_gas_ratio_RemyRuyer(nO_nH_ratio)
+
+    mask = r<0.5*r_max
+    print(r.shape, mask.shape)
+
+    fig, ax = plt.subplots(figsize=(5,3))
+    ax.semilogy(np.log10(nO_nH_ratio[mask])+12, dust_to_gas_ratio[mask], 'o', markersize=10, alpha=0.1)
+    ax.set_xlabel(r'$\log_{10}(n_{\rm O}/n_{\rm H})$ + 12')
+    ax.set_ylabel(r'Dust-to-gas ratio')
+    #plt.colorbar(im, label='Total Mass')
+    plt.tight_layout()
+    plt.savefig('metallicity_dust_to_gas_ratio.png', dpi=300)
     
     # Column 7: temperature
     '''

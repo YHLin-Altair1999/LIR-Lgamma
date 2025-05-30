@@ -2,7 +2,7 @@ import numpy as np
 import astropy.units as u
 import astropy.constants as c
 
-def modify_skifile(input_file, output_file, width):
+def modify_skifile(input_file, output_file, width, dust_type='MilkyWay'):
 
     # Define a dictionary of words to search for and their replacements
     replacements = {
@@ -13,7 +13,8 @@ def modify_skifile(input_file, output_file, width):
         'minZ="-3e4 pc"': f'minZ="{(-width[2]/2).to("pc").value:.5e} pc"',
         'maxZ="3e4 pc"' : f'maxZ="{(+width[2]/2).to("pc").value:.5e} pc"',
         'fieldOfViewX="3e4 pc"': f'fieldOfViewX="{width[0].to("pc").value:.5e} pc"',
-        'fieldOfViewY="3e4 pc"': f'fieldOfViewY="{width[0].to("pc").value:.5e} pc"'
+        'fieldOfViewY="3e4 pc"': f'fieldOfViewY="{width[0].to("pc").value:.5e} pc"',
+        'environment="SMC"': f'environment="{dust_type}"',
         }
 
     # Read the file

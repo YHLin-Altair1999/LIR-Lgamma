@@ -4,12 +4,6 @@ import yt
 from glob import glob
 import os
 
-unit_base = {
-    "UnitLength_in_cm": 3.09e21,
-    "UnitVelocity_in_cm_per_s": 1e5,
-    "UnitMass_in_g": 1.989e43,
-}
-
 def load_snap(galaxy: str, snap_id: int) -> pd.DataFrame:
     base_name = f'/tscc/lustre/ddn/scratch/yel051/AHF_result/outputs/{galaxy}/snapshot_{snap_id:03d}.*.z*.*.AHF_halos'
     fnames = sorted(list(glob(base_name)))
@@ -32,7 +26,8 @@ def load_snap(galaxy: str, snap_id: int) -> pd.DataFrame:
                              skiprows=0)
         dfs.append(df)
     df = pd.concat(dfs, ignore_index=True)
-    df = df.sort_values(by='npart(5)', ascending=False)
+    #df = df.sort_values(by='npart(5)', ascending=False)
+    df = df.sort_values(by='M_star(65)', ascending=False)
     return df
 
 
@@ -45,12 +40,13 @@ def get_center(galaxy: str, snap_id: int) -> list:
 def get_angular_momentum(galaxy: str, snap_id: int) -> list:
     df = load_snap(galaxy, snap_id)
     halo1 = df.iloc[0,:]
-    #out = list(halo1[['Lx_star(68)', 'Ly_star(69)', 'Lz_star(70)']])
-    out = list(halo1[['Lx_gas(48)', 'Ly_gas(49)', 'Lz_gas(50)']])
-    return out
+    L_star = list(halo1[['Lx_star(68)', 'Ly_star(69)', 'Lz_star(70)']])
+    #L_gas = list(halo1[['Lx_gas(48)', 'Ly_gas(49)', 'Lz_gas(50)']])
+    return L_star
 
 def get_snap_path(name: str, snap: int) -> str:
     paths = {
+        'm12i_hd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_hd_fire3/output/snapdir_{snap:03d}/', # constant diffusion
         'm12i_cd': f'/tscc/lustre/ddn/scratch/yul232/m12i_cr_700/output/snapdir_{snap:03d}/', # constant diffusion
         'm12i_et': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_new_cr_runs/mode1_v1000_AlfC00/snapdir_{snap:03d}/', # extrinsic turbulence
         'm12i_sc_fx10': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_new_cr_runs/mode6_v500_vAion_fx10/snapdir_{snap:03d}/', # self confinement

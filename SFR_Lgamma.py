@@ -165,6 +165,17 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
                 self._plot_fit_result(ax, self.obs_fit_result, color='gray', 
                                      label='Observation fit')
         
+        # Plot calorimetric limit
+        # Using equ. 10 from Chan et al. (2019)
+        calorimetric_limit_sfr = self.x_range * u.Msun/u.yr
+        calorimetric_limit_Lgamma = self.calorimetric_sfr_to_Lgamma(calorimetric_limit_sfr)
+        ax.plot(
+            calorimetric_limit_sfr.to(u.Msun/u.yr).value,
+            calorimetric_limit_Lgamma.to(u.erg/u.s).value,
+            color='black', linestyle='dotted', linewidth=1.5, alpha=0.8,
+            label='Calorimetric limit'
+        )
+
         # Configure the main axis
         ax.set_xscale('log')
         ax.set_yscale('log')
@@ -172,6 +183,9 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
         ax.set_xlim(self.x_range[0], self.x_range[-1])
         ax.legend()
     
+    def calorimetric_sfr_to_Lgamma(self, sfr):
+        return 6.7e39 * sfr.to(u.Msun/u.yr).value * u.erg/u.s
+
     def plot_residuals(self, ax):
         """Plot residuals (data/best fit) in the lower panel using a log scale"""
         # Skip residual plotting if both controls are disabled
@@ -187,7 +201,8 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
             x_data = self.sim_table['SFR (M_sun/yr)']
             y_data = self.sim_table['L_gamma (erg/s)']
             # Calculate model values using the observed fit
-            y_model = self.obs_fit_function(x_data)
+            #y_model = self.obs_fit_function(x_data)
+            y_model = self.calorimetric_sfr_to_Lgamma(np.array(x_data)*u.Msun/u.yr)
             # Calculate ratios (data/model)
             ratios = y_data/y_model
             all_ratios.extend(ratios)
@@ -208,9 +223,10 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
             x_data = self.obs_fit_result['data_x']
             y_data = self.obs_fit_result['data_y']
             # Calculate model values using the observed fit
-            y_model = self.obs_fit_function(x_data)
+            y_model = self.calorimetric_sfr_to_Lgamma(np.array(x_data)*u.Msun/u.yr)
+            #y_model = self.obs_fit_function(x_data)
             # Calculate ratios (data/model)
-            ratios = y_data/y_model
+            ratios = y_data*(u.erg/u.s)/y_model
             all_ratios.extend(ratios)
             
             ax.scatter(
@@ -218,6 +234,7 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
                 color='gray', marker='^', edgecolor='None', alpha=0.7, s=60, zorder=2
             )
         
+        '''
         # Add confidence region from the observation fit
         if self.plot_obs_fit_residuals and self.obs_fit_result and 'alpha_error' in self.obs_fit_result:
             # Calculate confidence band for display
@@ -245,16 +262,16 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
             
             # Plot the confidence band
             ax.fill_between(x_range, y_lower, y_upper, color='gray', alpha=0.1, zorder=1)
-            
-            # Add a horizontal line at y=1
-            ax.axhline(y=1, color='gray', linestyle='--', linewidth=1, zorder=1, alpha=0.1)
-        
+        '''
+        # Add a horizontal line at y=1
+        ax.axhline(y=1, color='k', linestyle='dotted', linewidth=1.5, zorder=1, alpha=0.8)
+
         # Configure the axis
         ax.set_yscale('log')
         if all_ratios:
             ratio = 10**(1.2*np.max(np.abs(np.log10(np.array(all_ratios)))))
             ax.set_ylim(1/ratio, ratio)
-        ax.set_ylabel(r'$L_{\gamma}/L_{\gamma,\mathrm{obs-fit}}$')
+        ax.set_ylabel(r'$L_{\gamma}/L_{\gamma,\mathrm{cal}}$')
     
     def finalize(self, fig, axes):
         """Finalize plot with labels, scales, and save"""
