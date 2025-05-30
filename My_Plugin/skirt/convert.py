@@ -103,9 +103,6 @@ def convert_stellar(galaxy, snap_id=600, rotate=True, r_max=30*u.kpc):
     header = open('/tscc/lustre/ddn/scratch/yel051/My_Plugin/skirt/skirt_header_stars.txt', 'r').read()
     np.savetxt("stars.txt", output, delimiter=" ", header=header)
 
-    # Caution! Removing old stars for investigating issue with m12i_sc
-    #output = output[output[:,6]<0.1]
-
     fig, axes = plt.subplots(ncols=3, figsize=(9,3), sharey=True)
     plt.subplots_adjust(left=0.08, right=0.85, wspace=0.)
     slice_part_xy = output[np.abs(output[:,2])<output[:,3]]

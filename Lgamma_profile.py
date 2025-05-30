@@ -70,21 +70,21 @@ if __name__ == '__main__':
         'm12i_sc_fx10': [60], 
         'm12i_sc_fx100': [60],
         'm12i_cd': [600],
-        'm11b_cd': [600],
-        'm11c_cd': [600],
-        'm11d_cd': [600],
-        'm11f_cd': [600],
-        'm11g_cd': [600],
-        'm11h_cd': [600],
-        'm11v_cd': [600],
-        'm10v_cd': [600],
-        'm09_cd': [600],
-        'm11f_et_AlfvenMax': [600],
-        'm11f_et_FastMax': [600],
-        'm11f_sc_fcas50': [600]
+        #'m11b_cd': [600],
+        #'m11c_cd': [600],
+        #'m11d_cd': [600],
+        #'m11f_cd': [600],
+        #'m11g_cd': [600],
+        #'m11h_cd': [600],
+        #'m11v_cd': [600],
+        #'m10v_cd': [600],
+        #'m09_cd': [600],
+        #'m11f_et_AlfvenMax': [600],
+        #'m11f_et_FastMax': [600],
+        #'m11f_sc_fcas50': [600]
         }
     rs = np.linspace(0, 25, 200)*u.kpc
     #rs = np.logspace(-5, 1, 20)*u.kpc
-    make_profiles(inputs, rs)
-    #plot_profiles(inputs)
+    #make_profiles(inputs, rs)
+    plot_profiles(inputs)
 

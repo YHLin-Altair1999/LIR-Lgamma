@@ -536,7 +536,7 @@ def main():
         'm11g_cd': [600],
         'm11h_cd': [600],
         'm11v_cd': [600],
-        'm10v_cd': [600],
+        #'m10v_cd': [600],
         #'m09_cd': [600],
         'm11f_et_AlfvenMax': [600],
         'm11f_et_FastMax': [600],

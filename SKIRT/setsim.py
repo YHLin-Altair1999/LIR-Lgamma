@@ -10,7 +10,7 @@ target_ski = 'run_SKIRT.ski'
 galaxy = str(sys.argv[2])
 snap_id = int(sys.argv[1])
 output_dir = f'output/{galaxy}/snap_{snap_id}'
-box_size = 30*u.kpc
+box_size = 50*u.kpc
 
 if __name__ == '__main__':
     # We change the dust type according to the halo mass of the galaxy.

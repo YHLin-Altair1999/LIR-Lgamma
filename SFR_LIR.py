@@ -126,7 +126,7 @@ class SFR_LIR_Plot:
             """Convert SFR to LIR using the Kennicutt relation"""
             return (SFR/(u.Msun/u.yr))/(epsilon*1.7e-10)*u.L_sun
 
-        SFR_range = np.logspace(-5, 1, 100)*u.Msun/u.yr
+        SFR_range = np.logspace(-3, 1, 100)*u.Msun/u.yr
         LIR_Kennicutt = SFR2LIR(SFR_range)
 
         ax.plot(
@@ -149,6 +149,7 @@ class SFR_LIR_Plot:
         # Set axis labels and scales
         ax.set_xscale('log')
         ax.set_yscale('log')
+        ax.set_xlim(SFR_range[0].value, SFR_range[-1].value)
         #ax.set_ylim(1e5, 1e11)
         ax.set_ylabel(r'$L_{\rm IR, ~8-1000 ~\mu m} ~(L_\odot)$')
         
@@ -214,7 +215,7 @@ def main():
         'm11g_cd': [600],
         'm11h_cd': [600],
         'm11v_cd': [600],
-        'm10v_cd': [600],
+        #'m10v_cd': [600],
         'm11f_et_AlfvenMax': [600],
         'm11f_et_FastMax': [600],
         'm11f_sc_fcas50': [600]

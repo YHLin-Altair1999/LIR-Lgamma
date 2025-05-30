@@ -252,7 +252,7 @@ def L_gamma_make_one_profile_Pfrommer(
         dL_gamma = Lambda_total * volume # equ 8
 
         for i in tqdm(range(1, rs.shape[0])):
-            profile[i,1] += np.sum(dL_gamma[(r > rs[i-1])*(r < rs[i])]).to('erg/s').value
+            profile[i,1] += np.sum(dL_gamma[(r > rs[i-1])*(r <= rs[i])]).to('erg/s').value
 
     target_folder = '/tscc/lustre/ddn/scratch/yel051/tables/Lgamma_profiles'
     fname = os.path.join(target_folder, f'Lgamma_profile_{galaxy}_snap{snap:03d}.npy')
