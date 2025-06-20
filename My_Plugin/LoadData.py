@@ -37,6 +37,12 @@ def get_center(galaxy: str, snap_id: int) -> list:
     out = list(halo1[['Xc(6)', 'Yc(7)', 'Zc(8)']])
     return out
 
+def get_radius(galaxy: str, snap_id: int) -> float:
+    df = load_snap(galaxy, snap_id)
+    halo1 = df.iloc[0,:]
+    r = halo1['Rhalo(12)']
+    return r
+
 def get_angular_momentum(galaxy: str, snap_id: int) -> list:
     df = load_snap(galaxy, snap_id)
     halo1 = df.iloc[0,:]

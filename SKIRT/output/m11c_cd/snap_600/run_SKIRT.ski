@@ -74,9 +74,9 @@
                     <SamplingOptions numDensitySamples="100" numPropertySamples="1" aggregateVelocity="Average"/>
                 </samplingOptions>
                 <grid type="SpatialGrid">
-                    <PolicyTreeSpatialGrid minX="-1.50000e+04 pc" maxX="1.50000e+04 pc" minY="-1.50000e+04 pc" maxY="1.50000e+04 pc" minZ="-1.50000e+04 pc" maxZ="1.50000e+04 pc" treeType="OctTree">
+                    <PolicyTreeSpatialGrid minX="-1.25653e+04 pc" maxX="1.25653e+04 pc" minY="-1.25653e+04 pc" maxY="1.25653e+04 pc" minZ="-1.25653e+04 pc" maxZ="1.25653e+04 pc" treeType="OctTree">
                         <policy type="TreePolicy">
-                            <DensityTreePolicy minLevel="3" maxLevel="8" maxDustFraction="1e-6" maxDustOpticalDepth="0.5" wavelength="0.55 micron" maxDustDensityDispersion="0" maxElectronFraction="1e-6" maxGasFraction="1e-6"/>
+                            <DensityTreePolicy minLevel="3" maxLevel="7" maxDustFraction="1e-6" maxDustOpticalDepth="0.5" wavelength="0.55 micron" maxDustDensityDispersion="0" maxElectronFraction="1e-6" maxGasFraction="1e-6"/>
                         </policy>
                     </PolicyTreeSpatialGrid>
                 </grid>
@@ -88,7 +88,7 @@
                     <LogWavelengthGrid minWavelength="0.09 micron" maxWavelength="1e3 micron" numWavelengths="300"/>
                 </defaultWavelengthGrid>
                 <instruments type="Instrument">
-                    <FullInstrument instrumentName="i00" distance="1 Mpc" inclination="0 deg"  azimuth="0 deg" roll="0 deg" fieldOfViewX="3.00000e+04 pc" numPixelsX="200" centerX="0 pc" fieldOfViewY="3.00000e+04 pc" numPixelsY="200" centerY="0 pc" recordComponents="true" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FullInstrument instrumentName="i00" distance="1 Mpc" inclination="0 deg"  azimuth="0 deg" roll="0 deg" fieldOfViewX="2.51306e+04 pc" numPixelsX="200" centerX="0 pc" fieldOfViewY="2.51306e+04 pc" numPixelsY="200" centerY="0 pc" recordComponents="true" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
                 </instruments>
             </InstrumentSystem>
         </instrumentSystem>

@@ -61,6 +61,13 @@ def add_fields(ds):
     #                units = "g*cm**(-3)",
     #                sampling_type = "local"
     #                )
+
+    ds.add_field(   ('gas', 'total_metallicity'),
+                    function = f.total_metallicity,
+                    units = "",
+                    sampling_type = "local"
+                    )
+
     ds.add_field(   ('gas', 'Compton_y'),
                     function = f.Compton_y,
                     units = "cm**(-1)",
@@ -100,6 +107,7 @@ def add_fields(ds):
     ds.add_field(   ('gas', 'gas_number_density'),
                     function = f.n_H,
                     units = "cm**(-3)",
-                    sampling_type = "local"
+                    sampling_type = "local",
+                    display_name = r'$\rho/m_{\rm p}$'
                     )
     return ds

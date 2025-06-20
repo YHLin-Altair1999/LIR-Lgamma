@@ -7,7 +7,8 @@ from glob import glob
 import My_Plugin.Fields as f
 from My_Plugin.Add_Fields import add_fields
 from My_Plugin.Cmaps import get_cmap
-from My_Plugin.LoadData import unit_base, get_center, get_angular_momentum, get_snap_path
+from My_Plugin.LoadData import get_center, get_angular_momentum, get_snap_path
+from My_Plugin.zlims import get_zlim
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run script with single or parallel processing.")
@@ -71,16 +72,23 @@ def process_task(task):
         elif plot_type == 'projection':
             p = yt.ProjectionPlot(ds, center=c, normal=normal, fields=field, width=width)
         elif plot_type == 'FaceOn':
-            p = yt.OffAxisProjectionPlot(ds, center=c, normal=new_z, fields=field, 
-                                       north_vector=new_x, width=width)
+            p = yt.OffAxisProjectionPlot(
+                ds, center=c, normal=new_z, fields=field, 
+                north_vector=new_x, width=width, 
+                #weight_field=('gas', 'density')
+                )
         else:  # EdgeOn
-            p = yt.OffAxisProjectionPlot(ds, center=c, normal=new_x, fields=field, 
-                                       north_vector=new_z, width=width)
+            p = yt.OffAxisProjectionPlot(
+                ds, center=c, normal=new_x, fields=field, 
+                north_vector=new_z, width=width,
+                #weight_field=('gas', 'density')
+                )
         
         # Configure and save plot
         p.set_cmap(field=field, cmap=get_cmap(field))
         p.annotate_timestamp(redshift=True)
         p.annotate_scale()
+        p.set_zlim(field, get_zlim(field)[0], get_zlim(field)[1])
         #p.set_zlim(field, 1e-9, 5e-9)
         
         fname = str(ds) + '_' + plot_type
@@ -112,16 +120,16 @@ def main():
         'm11f_et_FastMax': [600],
         'm11f_sc_fcas50': [600]
         }
-    width = (30, 'kpc')
+    width = (40, 'kpc')
     plot_types = [
         'FaceOn', 
         'EdgeOn', 
-        'projection',
+        #'projection',
         #'slice'
     ]
     normals = ['x', 'y', 'z']
     fields = [
-        ('gas', 'density'),
+        #('gas', 'density'),
         #('gas', 'CR_energy_density'),
         #('gas', 'CRp_number_density'),
         #('gas', 'Pion_decay_gamma_ray_source_function'),
@@ -132,6 +140,9 @@ def main():
         #('gas', 'metal_density'),
         #('gas', 'Neutral_Hydrogen_Number_Density'),
         #('gas', 'Compton_y'),
+        #('gas', 'total_metallicity'),
+        ('gas', 'gas_number_density')
+
     ]
     
     # Get number of processes

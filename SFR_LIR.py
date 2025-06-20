@@ -37,6 +37,7 @@ class SFR_LIR_Plot:
             fname = os.path.join(self.SFR_profile_folder, f'SFR_profile_{galaxy}_snap{snap:03d}.npy')
             profile = np.load(fname)
             SFR = np.sum(profile[:,1])*u.Msun/u.yr
+            print(f"Galaxy: {galaxy}, Snap: {snap}, SFR: {SFR.to('Msun/yr').value:.2e} Msun/yr")
             
             # Get LIR using the method from LIR_Lgamma_Plot
             LIR = self.lir_calculator.calculate_LIR(galaxy, snap).to('L_sun').value

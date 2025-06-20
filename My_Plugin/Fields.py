@@ -139,6 +139,9 @@ def metal_density(field, data):
     metal_density = data[('PartType0', 'Metallicity_00')]*data[('PartType0','Density')]
     return metal_density
 
+def total_metallicity(field, data):
+    return data[('PartType0', 'Metallicity_00')]
+
 def rho_HI(field, data):
     return data[('PartType0','NeutralHydrogenAbundance')]*data[('PartType0','Density')]
 

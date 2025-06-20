@@ -509,7 +509,7 @@ class LIR_Lgamma_Plot:
             calorimetric_limit_FIR.to('L_sun').value,
             calorimetric_limit_Lgamma.to('erg/s').value,
             color='black', linestyle=':', linewidth=1.5, alpha=0.8,
-            label='Calorimetric limit'
+            label='Calorimetric limit (K98)'
         )
 
         # Configure the main axis

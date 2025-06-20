@@ -1,7 +1,9 @@
 import astropy.units as u
 import astropy.constants as c
-from My_Plugin.skirt.convert import convert_stellar, convert_gas
+from My_Plugin.skirt.convert_gas_particles import convert_gas
+from My_Plugin.skirt.convert_stellar_particles import convert_stellar
 from My_Plugin.skirt.modify_ski import modify_skifile
+from My_Plugin.LoadData import get_radius
 import sys
 import re
 
@@ -10,7 +12,7 @@ target_ski = 'run_SKIRT.ski'
 galaxy = str(sys.argv[2])
 snap_id = int(sys.argv[1])
 output_dir = f'output/{galaxy}/snap_{snap_id}'
-box_size = 50*u.kpc
+box_size = 0.5 * get_radius(galaxy, snap_id) / 2**0.5 * u.kpc
 
 if __name__ == '__main__':
     # We change the dust type according to the halo mass of the galaxy.

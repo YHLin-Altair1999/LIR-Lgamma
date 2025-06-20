@@ -5,9 +5,9 @@ import yt
 import astropy.units as u
 import astropy.constants as c
 from scipy.integrate import simpson
-from .LoadData import get_center, get_snap_path
-from .Add_Fields import add_fields
-from My_Plugin.skirt.convert import get_units
+from My_Plugin.LoadData import get_center, get_snap_path
+from My_Plugin.Add_Fields import add_fields
+from My_Plugin.general_util import get_units
 import h5py
 from glob import glob
 import os
@@ -64,7 +64,7 @@ def L_IR(fname, wav_min=8*u.micron, wav_max=1000*u.micron):
     F_nu = np.array(df['total flux'])*u.Jy
     L_nu = 4*np.pi*d**2*F_nu
     wav = np.array(df['wavelength'])*u.micron
-    wav_integrate = np.logspace(np.log10(wav_min.value), np.log10(wav_max.value), 100)*wav_min.unit
+    wav_integrate = np.logspace(np.log10(wav_min.value), np.log10(wav_max.value), 1000)*wav_min.unit
     L_nu_integrate = np.interp(wav_integrate.value, wav.value, L_nu.value)*L_nu.unit
     nu = c.c/wav_integrate
     L_IR = -simpson(L_nu_integrate.value, x=nu.value) * (L_nu_integrate.unit * nu.unit)
@@ -111,11 +111,9 @@ def L_gamma_YHLin_onefile(f, center, aperture=25*u.kpc):
     mass = f['PartType0']['Masses'] * code_mass
     volume = mass / density
     
-    #n_n =  density * f_Hydrogen / c.m_p # thermal proton number density
     n_n =  density / c.m_p # thermal nucleon number density
     e_cr = E_cr / volume # CR energy density
     
-    #Gamma_cr_had = 5.8e-16 * (1+0.28*x_e) * e_cr.to('erg*cm**-3').value * n_n.to('cm**-3').value * u.erg/(u.cm**3*u.s)
     Gamma_cr_had = 5.8e-16 * e_cr.to('erg*cm**-3').value * n_n.to('cm**-3').value * u.erg/(u.cm**3*u.s) # equ 6
     dL_gamma = 1/3 * beta_pi * Gamma_cr_had * volume # equ 8
     L_gamma_onefile = np.sum(dL_gamma[r < aperture])
@@ -232,7 +230,6 @@ def L_gamma_make_one_profile_Pfrommer(
         interaction_factor = sigma_pp*n_n/(c.m_p*c.c)
         normalization = 16*C_p/(3*alpha_p)
 
-        #print(energy_ratio.shape, energy_term.shape, interaction_factor.shape, normalization.shape)
         # Calculate pion-decay gamma-ray luminosity
         s_pi = normalization[:, np.newaxis] * interaction_factor[:, np.newaxis] * mass_ratio * energy_term
 
@@ -253,7 +250,7 @@ def L_gamma_make_one_profile_Pfrommer(
 
         for i in tqdm(range(1, rs.shape[0])):
             profile[i,1] += np.sum(dL_gamma[(r > rs[i-1])*(r <= rs[i])]).to('erg/s').value
-
+    print(f'Total gamma ray luminosity of {galaxy} snap {snap} is {np.sum(profile):.2e} erg/s')
     target_folder = '/tscc/lustre/ddn/scratch/yel051/tables/Lgamma_profiles'
     fname = os.path.join(target_folder, f'Lgamma_profile_{galaxy}_snap{snap:03d}.npy')
     np.save(fname, profile)
@@ -263,7 +260,7 @@ def SFR_make_one_profile(
         galaxy: str, snap: int, rs, sfr_type='FIR'
         ):
     '''
-    make the gamma ray luminosity profile of a given galaxy snapshot
+    make the SFR profile of a given galaxy snapshot
     '''
     
     profile = np.zeros((rs.shape[0], 2))
@@ -279,8 +276,6 @@ def SFR_make_one_profile(
         code_mass = units[0]
         code_length = units[1]
         code_velocity = units[2]
-
-        cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
         
         def _get_sfr_from_stars(f, center, code_mass, code_length, tau_sfr=10*u.Myr):
             cosmo = FlatLambdaCDM(
@@ -301,7 +296,7 @@ def SFR_make_one_profile(
             mass_loss = gizmo_star.MassLossClass('fire2')
             mass_loss_frac = mass_loss.get_mass_loss_from_spline(
                                                 age.to('Gyr').value, # note that age is defined in Gyr
-                                                metallicities=metallicity/0.02
+                                                metallicities=metallicity
                                                 )
             mass_formed = mass / (1 - mass_loss_frac)
             mass_formed[mask] = 0
@@ -320,10 +315,84 @@ def SFR_make_one_profile(
                 SFR = _get_sfr_from_stars(f, center, code_mass, code_length, tau_sfr=100*u.Myr)
 
         for i in tqdm(range(1, rs.shape[0])):
-            profile[i,1] += np.sum(SFR[(r > rs[i-1])*(r < rs[i])]).to('M_sun/yr').value
+            profile[i,1] += np.sum(SFR[(r > rs[i-1])*(r <= rs[i])]).to('M_sun/yr').value
 
     target_folder = '/tscc/lustre/ddn/scratch/yel051/tables/SFR_profiles'
     fname = os.path.join(target_folder, f'SFR_profile_{galaxy}_snap{snap:03d}.npy')
     np.save(fname, profile)
     return
 
+def SFR_make_onezone(
+        galaxy: str, snap: int
+        ):
+    '''
+    calculate the total SFR of a given galaxy snapshot
+    '''
+
+    fnames = glob(os.path.join(get_snap_path(galaxy, snap), '*.hdf5'))
+    print('The files are', fnames)
+    fs = [h5py.File(fname, 'r') for fname in fnames]
+    center = get_center(galaxy, snap)
+    
+    tau_sfr_bins = 100
+    tau_sfr_max = 200*u.Myr
+    tau_sfrs = np.linspace(0, tau_sfr_max.to('Myr').value, tau_sfr_bins)*u.Myr
+    mass_in_bins = np.zeros(tau_sfrs.shape[0])*u.M_sun
+    for f in fs:
+        units = get_units(f)
+        code_mass = units[0]
+        code_length = units[1]
+        code_velocity = units[2]
+        
+        cosmo = FlatLambdaCDM(
+                H0 = f['Header'].attrs.get('HubbleParam')*100*u.km/(u.s*u.Mpc),
+                Om0 = f['Header'].attrs.get('Omega0')
+                )
+        z_now = f['Header'].attrs.get('Redshift')
+        t_now = cosmo.lookback_time(z_now)
+        a_sf  = np.array(f['PartType4']['StellarFormationTime'])
+        z_sf  = 1/a_sf - 1
+        t_sf  = cosmo.lookback_time(z_sf)
+        age   = (t_sf - t_now).to('Gyr')
+        mass = np.array(f['PartType4']['Masses'])*code_mass
+        metallicity = np.array(f['PartType4']['Metallicity'])[:,0]
+
+        mass_loss = gizmo_star.MassLossClass('fire2')
+        mass_loss_frac = mass_loss.get_mass_loss_from_spline(
+                                            age.to('Gyr').value, # note that age is defined in Gyr
+                                            metallicities=metallicity
+                                            )
+        mass_formed = mass / (1 - mass_loss_frac)
+        dM, edges = np.histogram(
+            age.to('Myr').value, bins=tau_sfr_bins, range=(0, tau_sfr_max.to('Myr').value), weights=mass_formed
+            )
+        print(dM)
+        mass_in_bins += dM
+    # Calculate cumulative sum once and divide by respective timescales
+    cumulative_mass = np.cumsum(mass_in_bins)
+    #SFR_of_tau += cumulative_mass.to('Msun').value / tau_sfrs.to('yr').value
+    SFR_of_tau = cumulative_mass.to('Msun').value / (edges[1:]*1e6)
+
+    fig, axes = plt.subplots(figsize=(6,6), nrows=2, ncols=1)
+    ax = axes[0]
+    bin_centers = 0.5 * (edges[:-1] + edges[1:])
+    ax.bar(bin_centers, 
+           mass_in_bins.to('Msun').value,
+           width=np.diff(edges),
+           label=f'{galaxy} snap {snap}',
+           alpha=0.5, color='C0')
+    ax.set_xlabel(r'Lookback time (Myr)')
+    ax.set_ylabel(r'Stellar mass formed ($M_\odot$)')
+    ax.set_xlim(edges[0], edges[-1])
+    ax = axes[1]
+    ax.plot(tau_sfrs.to('Myr').value, SFR_of_tau, label=f'{galaxy} snap {snap}')    
+    ax.set_xlabel(r'SFR timescale (Myr)')
+    ax.set_ylabel(r'SFR ($M_\odot$/yr)')
+    ax.set_xlim(tau_sfrs[0].to('Myr').value, tau_sfrs[-1].to('Myr').value)
+    ax.set_title(f'SFR of {galaxy} snap {snap}')
+    ax.legend()
+    target_folder = '/tscc/lustre/ddn/scratch/yel051/tables/SFR_profiles'
+    fname = os.path.join(target_folder, f'SFH_tau_comparison_{galaxy}_snap{snap:03d}.png')
+    plt.tight_layout()
+    fig.savefig(fname, dpi=300)
+    return
