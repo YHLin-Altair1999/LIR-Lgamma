@@ -93,11 +93,11 @@ def one_fits(path, dynamic_range=1e4):
     bands = [
         'ALMA_ALMA_9',
         'SPITZER_IRAC_I4',
-        'RUBIN_LSST_Y',
+        #'RUBIN_LSST_Y',
         'GENERIC_JOHNSON_R',
         'GENERIC_JOHNSON_V',
         'GENERIC_JOHNSON_B',
-        'GALEX_GALEX_NUV'
+        #'GALEX_GALEX_NUV'
         ]
     rgb_bands = [
         'GENERIC_JOHNSON_R',
@@ -107,7 +107,7 @@ def one_fits(path, dynamic_range=1e4):
     for band in bands:
         fname = path.split('.')[0] + f'_{band}.png'
         one_fig(hdul, band, fname, dynamic_range)
-    make_rgb_fits(hdul, rgb_bands, path.split('.')[0]+'rgb.fits')
+    make_rgb_fits(hdul, rgb_bands, path.split('.')[0]+'_rgb.fits')
     return 
 
 def data_cube_movie(path, dynamic_range=1e3):

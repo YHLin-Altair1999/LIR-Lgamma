@@ -525,10 +525,13 @@ class LIR_Lgamma_Plot:
 def main():
     print('Running LIR_Lgamma.py')
     galaxies = {
+        'm12f_cd': [600], 
         'm12i_et': [60], 
         'm12i_sc_fx10': [60], 
         'm12i_sc_fx100': [60],
         'm12i_cd': [600],
+        'm12r_cd': [600],
+        #'m12w_cd': [600],
         'm11b_cd': [600],
         'm11c_cd': [600],
         'm11d_cd': [600],

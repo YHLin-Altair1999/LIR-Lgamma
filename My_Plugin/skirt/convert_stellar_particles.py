@@ -25,17 +25,15 @@ def convert_stellar(
     
     logging.info('Converting stellar particles...')
     fs = get_data(galaxy, snap_id)
-    units = get_units(fs[0])
-    code_mass = units[0]
-    code_length = units[1]
-    code_velocity = units[2]
+    code_length = get_units(fs[0])[1]
     center = get_center(galaxy, snap_id)*code_length
     output = np.concatenate([convert_stellar_onefile(f, center, r_max) for f in fs], axis=0)
     if rotate:
         output = align_axis(galaxy, snap_id, output)
     
     # Calculate the stellar smoothing length
-    N_enclose = 32
+    N_enclose = 64
+    logging.info(f'Smoothing length calculated using KDTree with {N_enclose} enclosed particles')
     l_smooth = find_minimal_enclosing_radius_kdtree(output[:,:3], N_enclose)*u.pc
     output[:,3] = l_smooth.to('pc').value
 
@@ -98,7 +96,7 @@ def convert_stellar(
         ax.set_xlim(-box_size/2,box_size/2)
         ax.set_ylim(-box_size/2,box_size/2)
         ax.set_aspect('equal')
-    fig.savefig('star_particle_slice.jpg', dpi=300)
+    fig.savefig('star_particle_slice.png', dpi=300)
     plt.close()
     return
 
@@ -110,7 +108,6 @@ def convert_stellar_onefile(
     units = get_units(f)
     code_mass = units[0]
     code_length = units[1]
-    code_velocity = units[2]
     # Set up cosmology
     cosmo = FlatLambdaCDM(
         H0 = f['Header'].attrs.get('HubbleParam')*100*u.km/(u.s*u.Mpc),
@@ -156,3 +153,15 @@ def convert_stellar_onefile(
     output = output[(r<r_max)]
 
     return output
+
+def draw_SFH(array: np.ndarray):
+    '''
+    input: array
+    1st column: stellar mass in Msun
+    2nd column: stellar age in Gyr
+    '''
+    fig, ax = plt.subplots(figsize=default_figsize)
+
+    return None
+
+

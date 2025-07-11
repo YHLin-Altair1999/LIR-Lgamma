@@ -7,7 +7,6 @@ import astropy.io.fits as fits
 from scipy.interpolate import interp1d
 from scipy.integrate import simpson
 
-
 def integrate_datacube_filter(datacube, wave1, filter_wave, filter_response, dynamic_range=1e4):
     """
     Integrate a spectral datacube with a filter response function.
@@ -68,11 +67,13 @@ def make_convolved_image(hdul, band, dynamic_range=1e4):
     image = integrate_datacube_filter(cube, wavs, band['lambda'], band['T'], dynamic_range)
     return image
 
-def make_rgb_fits(hdul, bands, filename):
+def make_rgb_fits(hdul, bands, filename, normalize=True):
     r = make_convolved_image(hdul, bands[0])
     g = make_convolved_image(hdul, bands[1])
     b = make_convolved_image(hdul, bands[2])
     rgb = np.stack([r, g, b], axis=0)
+    if normalize:
+        rgb = rgb / np.max(rgb)
     # Create HDU and save
     hdu = fits.PrimaryHDU(rgb)
     hdu.header['NAXIS3'] = 3  # Indicate this is a 3-channel image

@@ -103,22 +103,26 @@ def main():
     # Configuration
     global plot_types, normals, fields, gal_snap_pairs, width
     gal_snap_pairs = {
-        'm12i_cd': [600], 
-        'm12i_et': [60], 
-        'm12i_sc_fx10': [60], 
-        'm12i_sc_fx100': [60],
-        'm11b_cd': [600],
-        'm11c_cd': [600],
-        'm11d_cd': [600],
-        'm11f_cd': [600],
-        'm11g_cd': [600],
-        'm11h_cd': [600],
-        'm11v_cd': [600],
-        'm10v_cd': [600],
-        'm09_cd': [600],
-        'm11f_et_AlfvenMax': [600],
-        'm11f_et_FastMax': [600],
-        'm11f_sc_fcas50': [600]
+        #'m12f_cd': [600],
+        'm12r_cd': [600],
+        'm12w_cd': [600],
+        #'m12i_hd': [20] 
+        #'m12i_cd': [600], 
+        #'m12i_et': [60], 
+        #'m12i_sc_fx10': [60], 
+        #'m12i_sc_fx100': [60],
+        #'m11b_cd': [600],
+        #'m11c_cd': [600],
+        #'m11d_cd': [600],
+        #'m11f_cd': [600],
+        #'m11g_cd': [600],
+        #'m11h_cd': [600],
+        #'m11v_cd': [600],
+        #'m10v_cd': [600],
+        #'m09_cd': [600],
+        #'m11f_et_AlfvenMax': [600],
+        #'m11f_et_FastMax': [600],
+        #'m11f_sc_fcas50': [600]
         }
     width = (40, 'kpc')
     plot_types = [
@@ -130,16 +134,16 @@ def main():
     normals = ['x', 'y', 'z']
     fields = [
         #('gas', 'density'),
-        #('gas', 'CR_energy_density'),
+        ('gas', 'CR_energy_density'),
         #('gas', 'CRp_number_density'),
-        #('gas', 'Pion_decay_gamma_ray_source_function'),
-        #('gas', 'inverse_Compton_gamma_ray_source_function'),
+        ('gas', 'Pion_decay_gamma_ray_source_function'),
+        ('gas', 'inverse_Compton_gamma_ray_source_function'),
         #('gas', 'u_B'),
         #('gas', 'Internal_energy_density'),
         #('gas', 'epsilon_gamma'),
         #('gas', 'metal_density'),
         #('gas', 'Neutral_Hydrogen_Number_Density'),
-        #('gas', 'Compton_y'),
+        ('gas', 'Compton_y'),
         #('gas', 'total_metallicity'),
         ('gas', 'gas_number_density')
 
@@ -153,6 +157,7 @@ def main():
     
     # Process all tasks in parallel
     for task in yt.parallel_objects(all_tasks, num_procs):
+        print(task)
         process_task(task)
 
 if __name__ == '__main__':

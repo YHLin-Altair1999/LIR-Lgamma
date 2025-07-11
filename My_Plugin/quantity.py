@@ -333,30 +333,32 @@ def SFR_make_onezone(
     print('The files are', fnames)
     fs = [h5py.File(fname, 'r') for fname in fnames]
     center = get_center(galaxy, snap)
+
+    # use the first file to setup units and cosmology
+    units = get_units(fs[0])
+    code_mass = units[0]
+    code_length = units[1]
+    code_velocity = units[2]
+    cosmo = FlatLambdaCDM(
+            H0 = fs[0]['Header'].attrs.get('HubbleParam')*100*u.km/(u.s*u.Mpc),
+            Om0 = fs[0]['Header'].attrs.get('Omega0')
+            )
+    z_now = fs[0]['Header'].attrs.get('Redshift')
+    t_now = cosmo.lookback_time(z_now)
     
-    tau_sfr_bins = 100
-    tau_sfr_max = 200*u.Myr
-    tau_sfrs = np.linspace(0, tau_sfr_max.to('Myr').value, tau_sfr_bins)*u.Myr
-    mass_in_bins = np.zeros(tau_sfrs.shape[0])*u.M_sun
+    tau = 100*u.Myr
+    age_interval = 0.5*u.Gyr
+    #tau_sfrs = np.linspace(0, tau_sfr_max.to('Myr').value, tau_sfr_bins)*u.Myr
+    age_bin_edges = np.arange(0, age_interval.to('Myr').value, 1)*u.Myr
+    age_bin_centers = (age_bin_edges[:-1] + age_bin_edges[1:])/2
+    mass_in_bins = np.zeros(age_bin_edges.shape[0]-1)*u.M_sun
     for f in fs:
-        units = get_units(f)
-        code_mass = units[0]
-        code_length = units[1]
-        code_velocity = units[2]
-        
-        cosmo = FlatLambdaCDM(
-                H0 = f['Header'].attrs.get('HubbleParam')*100*u.km/(u.s*u.Mpc),
-                Om0 = f['Header'].attrs.get('Omega0')
-                )
-        z_now = f['Header'].attrs.get('Redshift')
-        t_now = cosmo.lookback_time(z_now)
         a_sf  = np.array(f['PartType4']['StellarFormationTime'])
         z_sf  = 1/a_sf - 1
         t_sf  = cosmo.lookback_time(z_sf)
         age   = (t_sf - t_now).to('Gyr')
         mass = np.array(f['PartType4']['Masses'])*code_mass
         metallicity = np.array(f['PartType4']['Metallicity'])[:,0]
-
         mass_loss = gizmo_star.MassLossClass('fire2')
         mass_loss_frac = mass_loss.get_mass_loss_from_spline(
                                             age.to('Gyr').value, # note that age is defined in Gyr
@@ -364,35 +366,55 @@ def SFR_make_onezone(
                                             )
         mass_formed = mass / (1 - mass_loss_frac)
         dM, edges = np.histogram(
-            age.to('Myr').value, bins=tau_sfr_bins, range=(0, tau_sfr_max.to('Myr').value), weights=mass_formed
+            age.to('Myr').value, bins=age_bin_edges.to('Myr').value, weights=mass_formed
             )
-        print(dM)
         mass_in_bins += dM
     # Calculate cumulative sum once and divide by respective timescales
-    cumulative_mass = np.cumsum(mass_in_bins)
+    #cumulative_mass = np.cumsum(mass_in_bins)
     #SFR_of_tau += cumulative_mass.to('Msun').value / tau_sfrs.to('yr').value
-    SFR_of_tau = cumulative_mass.to('Msun').value / (edges[1:]*1e6)
+    #SFR_of_tau = cumulative_mass.to('Msun').value / (edges[1:]*1e6)
+    # Define the sliding window width
+    window_width = tau.to('Myr').value  # 100 Myr
 
-    fig, axes = plt.subplots(figsize=(6,6), nrows=2, ncols=1)
-    ax = axes[0]
-    bin_centers = 0.5 * (edges[:-1] + edges[1:])
-    ax.bar(bin_centers, 
-           mass_in_bins.to('Msun').value,
-           width=np.diff(edges),
-           label=f'{galaxy} snap {snap}',
-           alpha=0.5, color='C0')
+    # Create an array to store SFR values calculated with sliding window
+    num_windows = int((age_interval.to('Myr').value - window_width) // 1) + 1
+    SFR_sliding = np.zeros(num_windows) * u.M_sun / u.yr
+    window_centers = np.zeros(num_windows) * u.Myr
+
+    # Calculate SFR using sliding window
+    for i in range(num_windows):
+        window_start_idx = i
+        window_end_idx = window_start_idx + int(window_width)
+        
+        if window_end_idx <= len(mass_in_bins):
+            mass_in_window = np.sum(mass_in_bins[window_start_idx:window_end_idx])
+            SFR_sliding[i] = mass_in_window / tau
+            window_centers[i] = (window_start_idx + window_width/2) * u.Myr
+
+    # Calculate mean and std of SFR from sliding window
+    SFR_mean = np.mean(SFR_sliding)
+    SFR_std = np.std(SFR_sliding)
+    print(f"For {galaxy} snap {snap}")
+    print(f"Mean SFR over {tau}: {SFR_mean:.2f}")
+    print(f"Standard deviation of SFR: {SFR_std:.2f}")
+    target_folder = '/tscc/lustre/ddn/scratch/yel051/tables/SFR'
+    fname = os.path.join(target_folder, f'SFR_{galaxy}_snap{snap:03d}.npy')
+    np.save(fname, np.array([SFR_mean.to('Msun/yr').value, SFR_std.to('Msun/yr').value]))
+
+    fig, ax = plt.subplots(figsize=(5, 3))
+    age_interval = np.diff(age_bin_edges)
+    SFH = mass_in_bins/age_interval
+    ax.bar(age_bin_centers.to('Myr').value, SFH.to('Msun/yr').value, alpha=0.7, color='C0')
+    ax.axhline(SFR_mean.to('Msun/yr').value, color='C1', linestyle='solid', label='Mean SFR', alpha=0.3)
+    ax.fill_between(age_bin_centers.to('Myr').value, 
+                   (SFR_mean - SFR_std).to('Msun/yr').value, 
+                   (SFR_mean + SFR_std).to('Msun/yr').value, 
+                   color='C1', alpha=0.3)
     ax.set_xlabel(r'Lookback time (Myr)')
-    ax.set_ylabel(r'Stellar mass formed ($M_\odot$)')
-    ax.set_xlim(edges[0], edges[-1])
-    ax = axes[1]
-    ax.plot(tau_sfrs.to('Myr').value, SFR_of_tau, label=f'{galaxy} snap {snap}')    
-    ax.set_xlabel(r'SFR timescale (Myr)')
-    ax.set_ylabel(r'SFR ($M_\odot$/yr)')
-    ax.set_xlim(tau_sfrs[0].to('Myr').value, tau_sfrs[-1].to('Myr').value)
-    ax.set_title(f'SFR of {galaxy} snap {snap}')
-    ax.legend()
-    target_folder = '/tscc/lustre/ddn/scratch/yel051/tables/SFR_profiles'
-    fname = os.path.join(target_folder, f'SFH_tau_comparison_{galaxy}_snap{snap:03d}.png')
+    ax.set_ylabel(r'SFR ($M_\odot/{\rm yr}$)')
+    ax.set_xlim(0, age_bin_edges.max().to('Myr').value)
+    ax.set_title(f'Star formation history of {galaxy} snap {snap}')
     plt.tight_layout()
-    fig.savefig(fname, dpi=300)
+    fig.savefig(os.path.join(target_folder, f'SFR_{galaxy}_snap{snap:03d}.png'), dpi=300)
+    plt.close(fig)
     return

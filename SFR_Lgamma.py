@@ -11,7 +11,7 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
                 galaxies=None,
                 E_min=1*u.GeV, E_max=1000*u.GeV,
                 Lgamma_profile_folder='/tscc/lustre/ddn/scratch/yel051/tables/Lgamma_profiles',
-                SFR_profile_folder='/tscc/lustre/ddn/scratch/yel051/tables/SFR_profiles',
+                SFR_folder='/tscc/lustre/ddn/scratch/yel051/tables/SFR',
                 sim_table_path='./tables/Lgamma_SFR.csv',
                 show_obs_gal_name=False,
                 aperture=25*u.kpc):
@@ -24,7 +24,7 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
             sim_table_path=sim_table_path,
             show_obs_gal_name=show_obs_gal_name
         )
-        self.SFR_profile_folder = SFR_profile_folder
+        self.SFR_folder = SFR_folder
         self.aperture = aperture
         self.x_range = np.logspace(-3, 3, 100)  # SFR range differs from LIR
     
@@ -38,9 +38,8 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
                 profile = np.load(fname)
                 Lgamma = np.sum(profile[:,1])
                 
-                fname = os.path.join(self.SFR_profile_folder, f'SFR_profile_{galaxy}_snap{snap:03d}.npy')
-                profile = np.load(fname)
-                SFR = np.sum(profile[:,1])*u.Msun/u.yr
+                fname = os.path.join(self.SFR_folder, f'SFR_{galaxy}_snap{snap:03d}.npy')
+                SFR, SFR_err = np.load(fname)*u.Msun/u.yr
                 
                 data.append({
                     'galaxy': galaxy, 
@@ -209,11 +208,12 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
             
             # Plot ratios for each point
             for i, (x, ratio) in enumerate(zip(x_data, ratios)):
-                galaxy = list(self.galaxies.keys())[i] if i < len(self.galaxies) else None
+                #galaxy = list(self.galaxies.keys())[i] if i < len(self.galaxies) else None
+                galaxy = self.sim_table['galaxy'][i]
                 ax.scatter(
                     x, ratio,
                     marker=self.get_marker(galaxy=galaxy) if galaxy else 'o', 
-                    color=self.get_color(galaxy) if galaxy else 'blue', 
+                    color=self.get_color(galaxy), 
                     zorder=3, s=60, alpha=0.7, 
                     edgecolor='None'
                 )
@@ -293,10 +293,13 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
 def main(E_min=1*u.GeV, E_max=1000*u.GeV, show_names=False):
     print('Running SFR_Lgamma.py')
     galaxies = {
+        'm12f_cd': [600],
         'm12i_et': [60], 
         'm12i_sc_fx10': [60], 
         'm12i_sc_fx100': [60],
         'm12i_cd': [600],
+        'm12r_cd': [600],
+        'm12w_cd': [600],
         'm11b_cd': [600],
         'm11c_cd': [600],
         'm11d_cd': [600],

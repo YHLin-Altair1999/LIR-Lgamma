@@ -30,13 +30,18 @@ def plot_one_profile(ax, galaxy, snap, xunit, yunit, plot_type='cumulative'):
     dr = r[1]-r[0]
     Lgamma = profile[:,1]*u.erg/u.s
     L_gamma_cumulative = np.cumsum(Lgamma)
+    # normalize
+    L_gamma_cumulative /= L_gamma_cumulative[-1]
+
+    index = np.argmin(np.abs(r - 5*u.kpc))
+    print(f'{galaxy} snap {snap:03d} L_gamma at 5 kpc percentage: {(np.sum(Lgamma[:index])/np.sum(Lgamma)).to(''):.3e}')
 
     if galaxy.startswith('m12i_'):
         linestyle = 'solid'
     else:
         linestyle = 'dashed'
     if plot_type == 'cumulative':
-        ax.semilogy(
+        ax.plot(
             r.to(xunit).value, L_gamma_cumulative.to(yunit).value,
             linestyle=linestyle, label=f'{galaxy}')
     elif plot_type == 'differential':
@@ -49,13 +54,14 @@ def plot_one_profile(ax, galaxy, snap, xunit, yunit, plot_type='cumulative'):
 def plot_profiles(inputs, plot_type='cumulative'):
     fig, ax = plt.subplots(figsize=(6,4))
     xunit = u.kpc
-    yunit = u.erg/u.s
+    yunit = ''#u.erg/u.s
     for galaxy in tqdm(inputs.keys()):
         for snap in inputs[galaxy]:
             plot_one_profile(ax, galaxy, snap, xunit=xunit, yunit=yunit)
     xmin = 0.0*u.kpc / xunit
     ax.set_xlim(left=xmin)
     #ax.set_ylim(bottom=1e38)
+    ax.set_ylim(0.01, 1.1)
     ax.set_xlabel(rf'$r ~({{\rm {str(xunit)}}})$')
     ax.set_ylabel(rf'$L_{{\gamma}} ~({{\rm {str(yunit)}}})$')
     ax.set_title(rf'Cumulative pionic $\gamma$-ray luminosity ($E_\gamma > 1$ GeV)')
@@ -66,25 +72,28 @@ def plot_profiles(inputs, plot_type='cumulative'):
 
 if __name__ == '__main__':
     inputs = {
-        'm12i_et': [60], 
-        'm12i_sc_fx10': [60], 
-        'm12i_sc_fx100': [60],
-        'm12i_cd': [600],
-        'm11b_cd': [600],
-        'm11c_cd': [600],
-        'm11d_cd': [600],
-        'm11f_cd': [600],
-        'm11g_cd': [600],
-        'm11h_cd': [600],
-        'm11v_cd': [600],
-        'm10v_cd': [600],
-        'm09_cd': [600],
-        'm11f_et_AlfvenMax': [600],
-        'm11f_et_FastMax': [600],
-        'm11f_sc_fcas50': [600]
+        #'m12f_cd': [600], 
+        'm12r_cd': [600], 
+        'm12w_cd': [600], 
+        #'m12i_et': [60], 
+        #'m12i_sc_fx10': [60], 
+        #'m12i_sc_fx100': [60],
+        #'m12i_cd': [600, 590, 585, 580],
+        #'m11b_cd': [600],
+        #'m11c_cd': [600],
+        #'m11d_cd': [600],
+        #'m11f_cd': [600],
+        #'m11g_cd': [600],
+        #'m11h_cd': [600],
+        #'m11v_cd': [600],
+        #'m10v_cd': [600],
+        #'m09_cd': [600],
+        #'m11f_et_AlfvenMax': [600],
+        #'m11f_et_FastMax': [600],
+        #'m11f_sc_fcas50': [600]
         }
     rs = np.linspace(0, 40, 200)*u.kpc
     #rs = np.logspace(-5, 1, 20)*u.kpc
     make_profiles(inputs, rs)
-    #plot_profiles(inputs)
+    plot_profiles(inputs)
 

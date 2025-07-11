@@ -15,12 +15,12 @@ plt.rcParams.update({
 class SFR_LIR_Plot:
     def __init__(self, 
                 galaxies=None,
-                SFR_profile_folder='/tscc/lustre/ddn/scratch/yel051/tables/SFR_profiles',
+                SFR_folder='/tscc/lustre/ddn/scratch/yel051/tables/SFR',
                 table_path='./tables/SFR_LIR.csv',
                 aperture=25*u.kpc):
         """Initialize SFR_LIR_Plot with parameters for analysis and visualization"""
         self.galaxies = galaxies or {}
-        self.SFR_profile_folder = SFR_profile_folder
+        self.SFR_folder = SFR_folder
         self.table_path = table_path
         self.aperture = aperture
         # Create LIR_Lgamma_Plot instance to use its LIR calculation method
@@ -34,9 +34,8 @@ class SFR_LIR_Plot:
         
         for snap in snaps:
             # Get SFR from profile
-            fname = os.path.join(self.SFR_profile_folder, f'SFR_profile_{galaxy}_snap{snap:03d}.npy')
-            profile = np.load(fname)
-            SFR = np.sum(profile[:,1])*u.Msun/u.yr
+            fname = os.path.join(self.SFR_folder, f'SFR_{galaxy}_snap{snap:03d}.npy')
+            SFR, SFR_err = np.load(fname)*u.Msun/u.yr
             print(f"Galaxy: {galaxy}, Snap: {snap}, SFR: {SFR.to('Msun/yr').value:.2e} Msun/yr")
             
             # Get LIR using the method from LIR_Lgamma_Plot
@@ -47,6 +46,7 @@ class SFR_LIR_Plot:
                 'galaxy': galaxy, 
                 'snap': snap, 
                 'SFR (M_sun/yr)': SFR.to('Msun/yr').value,
+                'SFR_err (M_sun/yr)': SFR_err.to('Msun/yr').value,
                 'L_IR (L_sun)': LIR
             })
 
@@ -105,12 +105,15 @@ class SFR_LIR_Plot:
         # Plot each galaxy
         for i in range(df.shape[0]):
             galaxy = df['galaxy'].iloc[i]
-            ax.scatter(
+            ax.errorbar(
                 df['SFR (M_sun/yr)'].iloc[i], 
-                df['L_IR (L_sun)'].iloc[i], 
+                df['L_IR (L_sun)'].iloc[i],
+                xerr=df['SFR_err (M_sun/yr)'].iloc[i],
                 marker=self.get_marker(galaxy=galaxy), 
                 color=self.get_color(galaxy), 
-                s=60, alpha=0.8, edgecolor='None',
+                markersize=8, alpha=0.8, markeredgecolor='None',
+                ecolor=self.get_color(galaxy), elinewidth=1, capsize=3,
+                linestyle='none'  # Only show markers and error bars, no connecting lines
                 #label=galaxy if i == df['galaxy'].tolist().index(galaxy) else ""
             )
             # Add galaxy name annotation beside each data point
@@ -150,7 +153,8 @@ class SFR_LIR_Plot:
         # Set axis labels and scales
         ax.set_xscale('log')
         ax.set_yscale('log')
-        ax.set_xlim(SFR_range[0].value, SFR_range[-1].value)
+        #ax.set_xlim(SFR_range[0].value, SFR_range[-1].value)
+        ax.set_xlim(1e-1, 1e1)
         #ax.set_ylim(1e5, 1e11)
         ax.set_ylabel(r'$L_{\rm IR, ~8-1000 ~\mu m} ~(L_\odot)$')
         
@@ -163,12 +167,25 @@ class SFR_LIR_Plot:
         ax2 = axes[1]
         for i in range(df.shape[0]):
             galaxy = df['galaxy'].iloc[i]
-            ax2.scatter(
+            # Calculate the ratio and propagate error
+            kennicutt_lir = SFR2LIR(df['SFR (M_sun/yr)'].iloc[i]*u.M_sun/u.yr).to('L_sun').value
+            ratio = df['L_IR (L_sun)'].iloc[i] / kennicutt_lir
+            
+            # Error propagation for the ratio (assuming LIR has no error for simplicity)
+            # ratio_err ≈ (dLIR/dSFR) * SFR_err / kennicutt_lir
+            # For Kennicutt relation: dLIR/dSFR is proportional to 1/SFR, so error scales as SFR_err/SFR
+            ratio_err = ratio * (df['SFR_err (M_sun/yr)'].iloc[i] / df['SFR (M_sun/yr)'].iloc[i])
+            
+            ax2.errorbar(
                 df['SFR (M_sun/yr)'].iloc[i], 
-                df['L_IR (L_sun)'].iloc[i]/SFR2LIR(df['SFR (M_sun/yr)'].iloc[i]*u.M_sun/u.yr).to('L_sun').value, 
+                ratio,
+                xerr=df['SFR_err (M_sun/yr)'].iloc[i],
+                yerr=ratio_err,
                 marker=self.get_marker(galaxy=galaxy), 
                 color=self.get_color(galaxy), 
-                s=60, alpha=0.8, edgecolor='None',
+                markersize=8, alpha=0.8, markeredgecolor='None',
+                ecolor=self.get_color(galaxy), elinewidth=1, capsize=3,
+                linestyle='none'
                 #label=galaxy if i == df['galaxy'].tolist().index(galaxy) else ""
             )
         ax2.set_xscale('log')
@@ -208,7 +225,10 @@ def main():
         'm12i_et': [60], 
         'm12i_sc_fx10': [60], 
         'm12i_sc_fx100': [60],
-        'm12i_cd': [600],
+        'm12i_cd': [600],#, 590, 585, 580],
+        'm12f_cd': [600],
+        'm12r_cd': [600],
+        #'m12w_cd': [600],
         'm11b_cd': [600],
         'm11c_cd': [600],
         'm11d_cd': [600],

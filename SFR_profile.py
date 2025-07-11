@@ -70,7 +70,7 @@ if __name__ == '__main__':
         'm12i_et': [60], 
         'm12i_sc_fx10': [60], 
         'm12i_sc_fx100': [60],
-        'm12i_cd': [600],
+        'm12i_cd': [600, 590, 585, 580],
         'm11b_cd': [600],
         'm11c_cd': [600],
         'm11d_cd': [600],
@@ -86,6 +86,6 @@ if __name__ == '__main__':
         }
     rs = np.linspace(0, 25, 50)*u.kpc
     #rs = np.logspace(-5, 1, 20)*u.kpc
-    make_profiles(inputs, rs, sfr_type='FIR')
-    plot_profiles(inputs, plot_type='cumulative')
+    make_profiles(inputs, rs, sfr_type='Ha')
+    #plot_profiles(inputs, plot_type='cumulative')
 

@@ -47,7 +47,7 @@
                     <IterationOptions minPrimaryIterations="1" maxPrimaryIterations="8" minSecondaryIterations="1" maxSecondaryIterations="10" includePrimaryEmission="false" primaryIterationPacketsMultiplier="1" secondaryIterationPacketsMultiplier="1"/>
                 </iterationOptions>
                 <dustEmissionOptions type="DustEmissionOptions">
-                    <DustEmissionOptions dustEmissionType="Stochastic" includeHeatingByCMB="true" maxFractionOfPrimary="0.01" maxFractionOfPrevious="0.03" sourceWeight="1" wavelengthBias="0.5">
+                    <DustEmissionOptions dustEmissionType="Equilibrium" includeHeatingByCMB="true" maxFractionOfPrimary="0.01" maxFractionOfPrevious="0.03" sourceWeight="1" wavelengthBias="0.5">
                         <cellLibrary type="SpatialCellLibrary">
                             <AllCellsLibrary/>
                         </cellLibrary>
@@ -66,7 +66,7 @@
                         </smoothingKernel>
                         <materialMix type="MaterialMix">
                             <!-- <DraineLiDustMix numSilicateSizes="5" numGraphiteSizes="5" numPAHSizes="5"/> -->
-                            <WeingartnerDraineDustMix environment="SMC" numSilicateSizes="5" numGraphiteSizes="5" numPAHSizes="5"/>
+                            <WeingartnerDraineDustMix environment="MilkyWay" numSilicateSizes="5" numGraphiteSizes="5" numPAHSizes="5"/>
                         </materialMix>
                     </ParticleMedium>
                 </media>
@@ -74,7 +74,7 @@
                     <SamplingOptions numDensitySamples="100" numPropertySamples="1" aggregateVelocity="Average"/>
                 </samplingOptions>
                 <grid type="SpatialGrid">
-                    <PolicyTreeSpatialGrid minX="-1.85509e+04 pc" maxX="1.85509e+04 pc" minY="-1.85509e+04 pc" maxY="1.85509e+04 pc" minZ="-1.85509e+04 pc" maxZ="1.85509e+04 pc" treeType="OctTree">
+                    <PolicyTreeSpatialGrid minX="-2.42608e+04 pc" maxX="2.42608e+04 pc" minY="-2.42608e+04 pc" maxY="2.42608e+04 pc" minZ="-2.42608e+04 pc" maxZ="2.42608e+04 pc" treeType="OctTree">
                         <policy type="TreePolicy">
                             <DensityTreePolicy minLevel="3" maxLevel="8" maxDustFraction="1e-6" maxDustOpticalDepth="0.5" wavelength="0.55 micron" maxDustDensityDispersion="0" maxElectronFraction="1e-6" maxGasFraction="1e-6"/>
                         </policy>
@@ -88,7 +88,7 @@
                     <LogWavelengthGrid minWavelength="0.09 micron" maxWavelength="1e3 micron" numWavelengths="300"/>
                 </defaultWavelengthGrid>
                 <instruments type="Instrument">
-                    <FullInstrument instrumentName="i00" distance="1 Mpc" inclination="0 deg"  azimuth="0 deg" roll="0 deg" fieldOfViewX="3.71019e+04 pc" numPixelsX="200" centerX="0 pc" fieldOfViewY="3.71019e+04 pc" numPixelsY="200" centerY="0 pc" recordComponents="true" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FullInstrument instrumentName="i00" distance="1 Mpc" inclination="0 deg"  azimuth="0 deg" roll="0 deg" fieldOfViewX="4.85217e+04 pc" numPixelsX="200" centerX="0 pc" fieldOfViewY="4.85217e+04 pc" numPixelsY="200" centerY="0 pc" recordComponents="true" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
                 </instruments>
             </InstrumentSystem>
         </instrumentSystem>

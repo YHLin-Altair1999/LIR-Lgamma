@@ -24,13 +24,11 @@ def convert_gas(
         ):
     logging.info('Converting gas particles...')
     fs = get_data(galaxy, snap_id)
-    units = get_units(fs[0])
-    code_mass = units[0]
-    code_length = units[1]
-    code_velocity = units[2]
+    code_length = get_units(fs[0])[1]
     center = get_center(galaxy, snap_id)*code_length
-    #r_max = get_radius(galaxy, snap_id)*0.5*code_length
     output = np.concatenate([convert_gas_onefile(f, center, r_max) for f in fs], axis=0)
+    print('The total dust mass is', np.sum(output[:,5]*output[:,4]), 'M_sun')
+    print('The averaged dust to gas ratio is', np.sum(output[:,5]*output[:,4]) / np.sum(output[:,4]))
     if rotate:
         output = align_axis(galaxy, snap_id, output)
     header = open('/tscc/lustre/ddn/scratch/yel051/My_Plugin/skirt/skirt_header_gas.txt', 'r').read()
@@ -86,15 +84,15 @@ def convert_gas_onefile(
     He_mass_fraction = np.array(f['PartType0']['Metallicity'])[:,1]
     H_mass_fraction = 1 - metallicity - He_mass_fraction
     Oxygen_number_fraction = np.array(f['PartType0']['Metallicity'])[:,4] / 16
-    #Hydrogen_number_fraction = np.array(f['PartType0']['Metallicity'])[:,1] / 1
     Hydrogen_number_fraction = H_mass_fraction / 1
     nO_nH_ratio = Oxygen_number_fraction / Hydrogen_number_fraction
     logOH_12 = np.log10(nO_nH_ratio) + 12
 
     dust_to_gas_ratio = dust_to_gas_ratio_RemyRuyer(nO_nH_ratio)
+    #dust_to_gas_ratio /= 0.02/0.013
     #dust_to_gas_ratio = dust_to_gas_ratio_Galliano(nO_nH_ratio)
-
     dust_to_metal_ratio = dust_to_gas_ratio / metallicity
+
     # Put a cap on the dust-to-metal ratio at 0.5
     dust_to_gas_ratio[dust_to_metal_ratio > 0.5] = 0.5 * metallicity[dust_to_metal_ratio > 0.5]
     dust_to_metal_ratio = dust_to_gas_ratio / metallicity

@@ -12,6 +12,7 @@ target_ski = 'run_SKIRT.ski'
 galaxy = str(sys.argv[2])
 snap_id = int(sys.argv[1])
 output_dir = f'output/{galaxy}/snap_{snap_id}'
+#box_size = 30*u.kpc
 box_size = 0.5 * get_radius(galaxy, snap_id) / 2**0.5 * u.kpc
 
 if __name__ == '__main__':
