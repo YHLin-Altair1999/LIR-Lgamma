@@ -9,6 +9,7 @@ from tqdm import tqdm
 import logging
 from glob import glob
 from My_Plugin.skirt.convolve import make_convolved_image, make_rgb_fits
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 logging.basicConfig(level=logging.INFO)
 plt.rcParams.update({
@@ -59,13 +60,15 @@ def one_fig(hdul, band, fname, dynamic_range=1e4):
     
     #image = integrate_image(hdu, wavs, band_info[:2], dynamic_range) 
     image = make_convolved_image(hdul, band, dynamic_range)
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(6, 6*920/1085))
     #unit = 1e6*u.Jy/u.sr*u.Hz
     plot = ax.imshow(
-        image,
+        np.fliplr(image),
         #cmap=band_info[2], 
         cmap='gray', 
-        norm=LogNorm(), 
+        norm=LogNorm(),
+        #norm=Normalize(), 
+        origin='upper',
         extent=[
             x_center - x_scale*x_npixel,
             x_center + x_scale*x_npixel,
@@ -73,7 +76,9 @@ def one_fig(hdul, band, fname, dynamic_range=1e4):
             y_center + y_scale*y_npixel,
             ]
         )
-    cbar = plt.colorbar(plot)
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.)
+    cbar = plt.colorbar(plot, cax=cax)
     #cbar.set_label(rf'Intensity ({B_unit})', rotation=90, labelpad=15)
     cbar.set_label(rf'Intensity (arbitary)', rotation=90, labelpad=15)
 
@@ -91,12 +96,13 @@ def one_fits(path, dynamic_range=1e4):
     logging.info(f'Working on {path}')
     hdul = fits.open(path)
     bands = [
-        'ALMA_ALMA_9',
-        'SPITZER_IRAC_I4',
+        #'ALMA_ALMA_9',
+        'HERSCHEL_PACS_100', 
+        #'SPITZER_IRAC_I4',
         #'RUBIN_LSST_Y',
-        'GENERIC_JOHNSON_R',
+        #'GENERIC_JOHNSON_R',
         'GENERIC_JOHNSON_V',
-        'GENERIC_JOHNSON_B',
+        #'GENERIC_JOHNSON_B',
         #'GALEX_GALEX_NUV'
         ]
     rgb_bands = [
@@ -108,6 +114,10 @@ def one_fits(path, dynamic_range=1e4):
         fname = path.split('.')[0] + f'_{band}.png'
         one_fig(hdul, band, fname, dynamic_range)
     make_rgb_fits(hdul, rgb_bands, path.split('.')[0]+'_rgb.fits')
+    # Join band names with commas for the command
+    bands_str = ",".join(bands)
+    command = f'python -m pts.do plot_bands --names="{bands_str}"'
+    os.system(command)
     return 
 
 def data_cube_movie(path, dynamic_range=1e3):

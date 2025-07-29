@@ -26,8 +26,8 @@ def get_units(f):
     code_mass = 1e10*u.M_sun/h
     code_length = 1e0*u.kpc*a/h
     code_velocity = 1*u.km/u.s*np.sqrt(a)
-    print(f"loading snapshot at z={z:.1f}, h={h:.2f}")
-    print(f"code mass: {code_mass}, code length: {code_length}, code velocity:{code_velocity}")
+    #print(f"loading snapshot at z={z:.1f}, h={h:.2f}")
+    #print(f"code mass: {code_mass}, code length: {code_length}, code velocity:{code_velocity}")
     return [code_mass, code_length, code_velocity]
 
 def get_data(galaxy, snap=600):

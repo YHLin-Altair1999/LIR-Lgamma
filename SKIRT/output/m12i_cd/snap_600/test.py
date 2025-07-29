@@ -1,0 +1,3 @@
+from My_Plugin.skirt.convert_gas_particles import load_and_plot_statistics
+load_and_plot_statistics()
+

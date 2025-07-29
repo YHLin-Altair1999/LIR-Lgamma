@@ -7,7 +7,7 @@ from glob import glob
 import My_Plugin.Fields as f
 from My_Plugin.Add_Fields import add_fields
 from My_Plugin.Cmaps import get_cmap
-from My_Plugin.LoadData import get_center, get_angular_momentum, get_snap_path
+from My_Plugin.LoadData import get_center, get_angular_momentum, get_snap_path, get_radius
 from My_Plugin.zlims import get_zlim
 
 def parse_arguments():
@@ -39,19 +39,20 @@ def generate_all_tasks():
     for galaxy in gal_snap_pairs.keys():
         snaps = gal_snap_pairs[galaxy]
         for snap in snaps:
+            width = (0.5 * get_radius(galaxy, snap) / 2**0.5, 'kpc')
             for field in fields:
                 for plot_type in plot_types:
                     if plot_type in ['slice', 'projection']:
                         for normal in normals:
-                            tasks.append((galaxy, snap, field, plot_type, normal))
+                            tasks.append((galaxy, snap, field, plot_type, normal, width))
                     else:  # FaceOn or EdgeOn
-                        tasks.append((galaxy, snap, field, plot_type, None))
+                        tasks.append((galaxy, snap, field, plot_type, None, width))
     return tasks
 
 def process_task(task):
     """Process a single visualization task"""
     try:
-        galaxy, snap, field, plot_type, normal = task
+        galaxy, snap, field, plot_type, normal, width = task
         
         # Load dataset
         path = get_snap_path(galaxy, snap)
@@ -104,10 +105,10 @@ def main():
     global plot_types, normals, fields, gal_snap_pairs, width
     gal_snap_pairs = {
         #'m12f_cd': [600],
-        'm12r_cd': [600],
-        'm12w_cd': [600],
+        #'m12r_cd': [600],
+        #'m12w_cd': [600],
         #'m12i_hd': [20] 
-        #'m12i_cd': [600], 
+        'm12i_cd': [600], 
         #'m12i_et': [60], 
         #'m12i_sc_fx10': [60], 
         #'m12i_sc_fx100': [60],

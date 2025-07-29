@@ -20,7 +20,7 @@ plt.rcParams.update({
 default_figsize = (5, 3)
 
 def convert_stellar(
-        galaxy, snap_id=600, rotate=True, r_max=30*u.kpc
+        galaxy, snap_id=600, rotate=True, r_max=30*u.kpc, N_enclose=32
         ):
     
     logging.info('Converting stellar particles...')
@@ -32,7 +32,6 @@ def convert_stellar(
         output = align_axis(galaxy, snap_id, output)
     
     # Calculate the stellar smoothing length
-    N_enclose = 64
     logging.info(f'Smoothing length calculated using KDTree with {N_enclose} enclosed particles')
     l_smooth = find_minimal_enclosing_radius_kdtree(output[:,:3], N_enclose)*u.pc
     output[:,3] = l_smooth.to('pc').value
@@ -151,6 +150,7 @@ def convert_stellar_onefile(
     output[:,5] = metallicity
     output[:,6] = age
     output = output[(r<r_max)]
+    #output = output[(output[:,6]<0.2)] # only young stars, age < 0.2 Gyr
 
     return output
 

@@ -155,7 +155,7 @@ class SFR_LIR_Plot:
         ax.set_yscale('log')
         #ax.set_xlim(SFR_range[0].value, SFR_range[-1].value)
         ax.set_xlim(1e-1, 1e1)
-        #ax.set_ylim(1e5, 1e11)
+        ax.set_ylim(1e8, 1e11)
         ax.set_ylabel(r'$L_{\rm IR, ~8-1000 ~\mu m} ~(L_\odot)$')
         
         # Add other plot elements
@@ -228,7 +228,7 @@ def main():
         'm12i_cd': [600],#, 590, 585, 580],
         'm12f_cd': [600],
         'm12r_cd': [600],
-        #'m12w_cd': [600],
+        'm12w_cd': [600],
         'm11b_cd': [600],
         'm11c_cd': [600],
         'm11d_cd': [600],

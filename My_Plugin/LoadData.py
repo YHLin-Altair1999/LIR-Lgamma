@@ -71,6 +71,11 @@ def get_angular_momentum(galaxy: str, snap_id: int) -> list:
     #L_gas = list(halo1[['Lx_gas(48)', 'Ly_gas(49)', 'Lz_gas(50)']])
     return L_star
 
+def get_stellar_mass(galaxy: str, snap_id: int) -> float:
+    df = load_snap(galaxy, snap_id)
+    M_star = df.iloc[0,:]['M_star(65)']
+    return M_star
+
 def get_snap_path(name: str, snap: int) -> str:
     paths = {
         'm12f_cd': f'/tscc/lustre/ddn/scratch/yul232/m12f_cr_700_mass_7000/output/snapdir_{snap:03d}/', # constant diffusion
@@ -85,7 +90,7 @@ def get_snap_path(name: str, snap: int) -> str:
         'm11f_sc_fcas50': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11f/m11f_sc_fcas50/snapdir_{snap:03d}/',
         'm11f_et_AlfvenMax': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11f/m11f_et_AlfvenMax/snapdir_{snap:03d}/',
         'm11f_et_FastMax': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11f/m11f_et_FastMax/snapdir_{snap:03d}/',
-        'm11b_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11b_cr_700/output/snapdir_{snap:03d}/',
+        'm11b_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11b/m11b_cr_700/output/snapdir_{snap:03d}/',
         'm11c_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11c_cr_700/output/snapdir_{snap:03d}/',
         'm11d_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11d_cr_700/output/snapdir_{snap:03d}/',
         'm11g_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11g_cr_700/output/snapdir_{snap:03d}/',
