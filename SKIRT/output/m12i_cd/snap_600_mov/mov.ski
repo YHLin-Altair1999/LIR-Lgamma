@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A SKIRT parameter file © Astronomical Observatory, Ghent University -->
+<skirt-simulation-hierarchy type="MonteCarloSimulation" format="9" producer="SKIRT v9.0 (git 09eb9e8-dirty built on 19/05/2025 at 19:17:20)" time="2025-09-07T09:54:23.196">
+    <MonteCarloSimulation userLevel="Regular" simulationMode="ExtinctionOnly" iteratePrimaryEmission="false" iterateSecondaryEmission="false" numPackets="3e6">
+        <random type="Random">
+            <Random seed="0"/>
+        </random>
+        <units type="Units">
+            <ExtragalacticUnits wavelengthOutputStyle="Wavelength" fluxOutputStyle="Frequency"/>
+        </units>
+        <cosmology type="Cosmology">
+            <LocalUniverseCosmology/>
+        </cosmology>
+        <sourceSystem type="SourceSystem">
+            <SourceSystem minWavelength="0.09 micron" maxWavelength="1 micron" wavelengths="0.55 micron" sourceBias="0.5">
+                <sources type="Source">
+                    <ParticleSource filename="stars.txt" importVelocity="false" importVelocityDispersion="false" importCurrentMass="false" importBias="false" useColumns="" sourceWeight="1" wavelengthBias="0.5">
+                        <smoothingKernel type="SmoothingKernel">
+                            <CubicSplineSmoothingKernel/>
+                        </smoothingKernel>
+                        <sedFamily type="SEDFamily">
+                            <Starburst99SEDFamily/>
+                        </sedFamily>
+                        <wavelengthBiasDistribution type="WavelengthDistribution">
+                            <DefaultWavelengthDistribution/>
+                        </wavelengthBiasDistribution>
+                    </ParticleSource>
+                </sources>
+            </SourceSystem>
+        </sourceSystem>
+        <mediumSystem type="MediumSystem">
+            <MediumSystem>
+                <photonPacketOptions type="PhotonPacketOptions">
+                    <PhotonPacketOptions explicitAbsorption="false" forceScattering="true" minWeightReduction="1e4" minScattEvents="0" pathLengthBias="0.5"/>
+                </photonPacketOptions>
+                <radiationFieldOptions type="RadiationFieldOptions">
+                    <RadiationFieldOptions storeRadiationField="false"/>
+                </radiationFieldOptions>
+                <media type="Medium">
+                    <ParticleMedium filename="gas.txt" massType="Mass" massFraction="1" importMetallicity="true" importTemperature="true" maxTemperature="1e6 K" importVelocity="false" importMagneticField="false" importVariableMixParams="false" useColumns="">
+                        <smoothingKernel type="SmoothingKernel">
+                            <CubicSplineSmoothingKernel/>
+                        </smoothingKernel>
+                        <materialMix type="MaterialMix">
+                            <WeingartnerDraineDustMix environment="MilkyWay" numSilicateSizes="5" numGraphiteSizes="5" numPAHSizes="5"/>
+                        </materialMix>
+                    </ParticleMedium>
+                </media>
+                <samplingOptions type="SamplingOptions">
+                    <SamplingOptions numDensitySamples="100" numPropertySamples="1" aggregateVelocity="Average"/>
+                </samplingOptions>
+                <grid type="SpatialGrid">
+                    <PolicyTreeSpatialGrid minX="-2e4 pc" maxX="2e4 pc" minY="-2e4 pc" maxY="2e4 pc" minZ="-2e4 pc" maxZ="2e4 pc" treeType="OctTree">
+                        <policy type="TreePolicy">
+                            <DensityTreePolicy minLevel="3" maxLevel="9" maxDustFraction="1e-6" maxDustOpticalDepth="0" wavelength="0.55 micron" maxDustDensityDispersion="0" maxElectronFraction="1e-6" maxGasFraction="1e-6"/>
+                        </policy>
+                    </PolicyTreeSpatialGrid>
+                </grid>
+            </MediumSystem>
+        </mediumSystem>
+        <instrumentSystem type="InstrumentSystem">
+            <InstrumentSystem>
+                <defaultWavelengthGrid type="WavelengthGrid">
+                    <LogWavelengthGrid minWavelength="0.09 micron" maxWavelength="1 micron" numWavelengths="10"/>
+                </defaultWavelengthGrid>
+                <instruments type="Instrument">
+                    <FrameInstrument instrumentName="p000" distance="1 Mpc" inclination="090 deg" azimuth="000 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p009" distance="1 Mpc" inclination="099 deg" azimuth="009 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p018" distance="1 Mpc" inclination="109 deg" azimuth="018 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p027" distance="1 Mpc" inclination="117 deg" azimuth="027 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p036" distance="1 Mpc" inclination="125 deg" azimuth="036 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p045" distance="1 Mpc" inclination="132 deg" azimuth="045 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p054" distance="1 Mpc" inclination="139 deg" azimuth="054 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p063" distance="1 Mpc" inclination="143 deg" azimuth="063 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p072" distance="1 Mpc" inclination="147 deg" azimuth="072 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p081" distance="1 Mpc" inclination="149 deg" azimuth="081 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p090" distance="1 Mpc" inclination="150 deg" azimuth="090 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p099" distance="1 Mpc" inclination="149 deg" azimuth="099 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p108" distance="1 Mpc" inclination="147 deg" azimuth="108 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p117" distance="1 Mpc" inclination="143 deg" azimuth="117 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p126" distance="1 Mpc" inclination="139 deg" azimuth="126 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p135" distance="1 Mpc" inclination="132 deg" azimuth="135 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p144" distance="1 Mpc" inclination="125 deg" azimuth="144 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p153" distance="1 Mpc" inclination="117 deg" azimuth="153 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p162" distance="1 Mpc" inclination="109 deg" azimuth="162 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p171" distance="1 Mpc" inclination="099 deg" azimuth="171 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p180" distance="1 Mpc" inclination="090 deg" azimuth="180 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p189" distance="1 Mpc" inclination="081 deg" azimuth="189 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p198" distance="1 Mpc" inclination="071 deg" azimuth="198 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p207" distance="1 Mpc" inclination="063 deg" azimuth="207 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p216" distance="1 Mpc" inclination="055 deg" azimuth="216 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p225" distance="1 Mpc" inclination="048 deg" azimuth="225 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p234" distance="1 Mpc" inclination="041 deg" azimuth="234 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p243" distance="1 Mpc" inclination="037 deg" azimuth="243 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p252" distance="1 Mpc" inclination="033 deg" azimuth="252 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p261" distance="1 Mpc" inclination="031 deg" azimuth="261 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p270" distance="1 Mpc" inclination="030 deg" azimuth="270 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p279" distance="1 Mpc" inclination="031 deg" azimuth="279 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p288" distance="1 Mpc" inclination="033 deg" azimuth="288 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p297" distance="1 Mpc" inclination="037 deg" azimuth="297 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p306" distance="1 Mpc" inclination="041 deg" azimuth="306 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p315" distance="1 Mpc" inclination="048 deg" azimuth="315 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p324" distance="1 Mpc" inclination="055 deg" azimuth="324 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p333" distance="1 Mpc" inclination="063 deg" azimuth="333 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p342" distance="1 Mpc" inclination="071 deg" azimuth="342 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+                    <FrameInstrument instrumentName="p351" distance="1 Mpc" inclination="081 deg" azimuth="351 deg" roll="0 deg" fieldOfViewX="4e4 pc" numPixelsX="800" centerX="0 pc" fieldOfViewY="4e4 pc" numPixelsY="800" centerY="0 pc" recordComponents="false" numScatteringLevels="0" recordPolarization="false" recordStatistics="false"/>
+</instruments>
+            </InstrumentSystem>
+        </instrumentSystem>
+        <probeSystem type="ProbeSystem">
+            <ProbeSystem/>
+        </probeSystem>
+    </MonteCarloSimulation>
+</skirt-simulation-hierarchy>

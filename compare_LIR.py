@@ -1,13 +1,18 @@
 from My_Plugin.quantity import L_IR
 
 sims = {
-    'm12i_cd' : '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/m12i_cd/snap_600/run_SKIRT_i00_sed.dat',
-    'm12i_cd_LTE' : '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/m12i_cd_LTE/snap_600/run_SKIRT_i00_sed.dat',
+    #'m12i_cd' : '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/m12i_cd/snap_600/run_SKIRT_i00_sed.dat',
+    #'m12i_cd_highres': '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/old/m12i_cd_highres/snap_600/run_SKIRT_i00_sed.dat',
+    #'m12i_cd_LTE' : '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/m12i_cd_LTE/snap_600/run_SKIRT_i00_sed.dat',
     #'m12i_cd_standard' : '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/m12i_cd_standard/snap_600/run_SKIRT_i00_sed.dat',
-    'm12i_cd_noiter' : '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/m12i_cd_noiter/snap_600/run_SKIRT_i00_sed.dat',
-    'm12i_cd_crc-convert_crcski': '/tscc/lustre/ddn/scratch/yel051/CRC_test/m12i_test_crcski/basic_MW_i00_sed.dat',
-    'm12i_cd_crc-convert_myski': '/tscc/lustre/ddn/scratch/yel051/CRC_test/m12i_test/run_SKIRT_i00_sed.dat',
-    'm12i_cd_OnlyYoung': '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/m12i_cd_OnlyYoung/snap_600/run_SKIRT_i00_sed.dat',
+    #'m12i_cd_noiter' : '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/m12i_cd_noiter/snap_600/run_SKIRT_i00_sed.dat',
+    #'m12i_cd_crc-convert_crcski': '/tscc/lustre/ddn/scratch/yel051/CRC_test/m12i_test_crcski/basic_MW_i00_sed.dat',
+    #'m12i_cd_crc-convert_myski': '/tscc/lustre/ddn/scratch/yel051/CRC_test/m12i_test/run_SKIRT_i00_sed.dat',
+    #'m12i_cd_OnlyYoung': '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/m12i_cd_OnlyYoung/snap_600/run_SKIRT_i00_sed.dat',
+    'm12i_lv5': '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/zoomin_tests/m12i_cd_ref5/snap_600/run_SKIRT_i00_sed.dat',
+    'm12i_lv8': '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/zoomin_tests/m12i_cd_ref8/snap_600/run_SKIRT_i00_sed.dat',
+    'm12i_lv9': '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/zoomin_tests/m12i_cd_ref9/snap_600/run_SKIRT_i00_sed.dat',
+    'm12i_lv10': '/tscc/lustre/ddn/scratch/yel051/SKIRT/output/zoomin_tests/m12i_cd_ref10/snap_600/run_SKIRT_i00_sed.dat'
 }
 
 for sim, path in sims.items():

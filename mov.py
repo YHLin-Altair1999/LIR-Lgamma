@@ -74,7 +74,7 @@ for galaxy in galaxies:
                             p = yt.ProjectionPlot(ds, center=c, normal=normal, fields=field, width=(250, 'kpc'))
                             plots.append(p)
                     case 'FaceOn':
-                        p = yt.OffAxisProjectionPlot(ds, center=c, normal=new_z, fields=field, north_vector=new_x, width=(30, 'kpc'))
+                        p = yt.OffAxisProjectionPlot(ds, center=c, normal=new_z, fields=field, north_vector=new_x, width=(50, 'kpc'))
                         plots.append(p)
                     case 'EdgeOn':
                         p = yt.OffAxisProjectionPlot(ds, center=c, normal=new_x, fields=field, north_vector=new_z, width=(30, 'kpc'))

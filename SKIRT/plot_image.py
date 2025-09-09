@@ -105,20 +105,16 @@ def one_fits(path, dynamic_range=1e4):
         #'GENERIC_JOHNSON_B',
         #'GALEX_GALEX_NUV'
         ]
-    rgb_bands = [
-        'GENERIC_JOHNSON_R',
-        'GENERIC_JOHNSON_V',
-        'GENERIC_JOHNSON_B',
-        ]
-    for band in bands:
-        fname = path.split('.')[0] + f'_{band}.png'
-        one_fig(hdul, band, fname, dynamic_range)
-    make_rgb_fits(hdul, rgb_bands, path.split('.')[0]+'_rgb.fits')
+    #for band in bands:
+    #    fname = path.split('.')[0] + f'_{band}.png'
+    #    one_fig(hdul, band, fname, dynamic_range)
+    make_rgb_fits(hdul, ['GENERIC_JOHNSON_R', 'GENERIC_JOHNSON_V', 'GENERIC_JOHNSON_B'], path.split('.')[0]+'_optical_rgb.fits')
+    make_rgb_fits(hdul, ['HERSCHEL_PACS_160', 'HERSCHEL_PACS_100', 'HERSCHEL_PACS_70'],  path.split('.')[0]+'_FIR_rgb.fits')
     # Join band names with commas for the command
-    bands_str = ",".join(bands)
-    command = f'python -m pts.do plot_bands --names="{bands_str}"'
-    os.system(command)
-    return 
+    #bands_str = ",".join(bands)
+    #command = f'python -m pts.do plot_bands --names="{bands_str}"'
+    #os.system(command)
+    return
 
 def data_cube_movie(path, dynamic_range=1e3):
     hdul = fits.open(path)

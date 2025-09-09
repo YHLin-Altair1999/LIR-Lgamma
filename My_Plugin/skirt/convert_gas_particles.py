@@ -6,10 +6,9 @@ import logging
 import os
 from glob import glob
 from gizmo_analysis import gizmo_star
-from astropy.cosmology import FlatLambdaCDM
 from My_Plugin.LoadData import get_center, get_angular_momentum, get_snap_path, get_radius
 from My_Plugin.skirt.dust_scaling import dust_to_gas_ratio_RemyRuyer, dust_to_gas_ratio_Galliano
-from My_Plugin.general_util import get_units, get_data, align_axis
+from My_Plugin.general_util import get_units, get_data, align_axis, get_cosmology
 from matplotlib.colors import LogNorm
 logging.basicConfig(level=logging.INFO)
 plt.rcParams.update({
@@ -62,8 +61,8 @@ def convert_gas(
     axes[1].scatter(slice_part_yz[:,1], slice_part_yz[:,2], s=0.1)
     axes[2].scatter(slice_part_xz[:,0], slice_part_xz[:,2], s=0.1)
     for ax in axes:
-        ax.set_xlim(-2.5e4,2.5e4)
-        ax.set_ylim(-2.5e4,2.5e4)
+        ax.set_xlim(-r_max.to('pc').value/2,r_max.to('pc').value/2)
+        ax.set_ylim(-r_max.to('pc').value/2,r_max.to('pc').value/2)
         ax.set_aspect('equal')
     fig.savefig('gas_particle_slice.png', )
     
@@ -81,10 +80,7 @@ def convert_gas_onefile(
     code_velocity = units[2]
 
     # Set up cosmology
-    cosmo = FlatLambdaCDM(
-        H0 = f['Header'].attrs.get('HubbleParam')*100*u.km/(u.s*u.Mpc),
-        Om0 = f['Header'].attrs.get('Omega0')
-        )
+    cosmo = get_cosmology(f)
 
     # Column 1-3: coordinates
     coords = np.array(f['PartType0']['Coordinates'])*code_length
@@ -114,8 +110,11 @@ def convert_gas_onefile(
     dust_to_metal_ratio = dust_to_gas_ratio / metallicity
 
     # Put a cap on the dust-to-metal ratio at 0.5
-    dust_to_gas_ratio[dust_to_metal_ratio > 0.5] = 0.5 * metallicity[dust_to_metal_ratio > 0.5]
-    dust_to_metal_ratio = dust_to_gas_ratio / metallicity
+    # dust_to_gas_ratio[dust_to_metal_ratio > 0.5] = 0.5 * metallicity[dust_to_metal_ratio > 0.5]
+    
+    # Only for test!!!!!!
+    # dust_to_gas_ratio = 0.5 * metallicity
+    # dust_to_metal_ratio = dust_to_gas_ratio / metallicity
 
     mask = r < r_max
 

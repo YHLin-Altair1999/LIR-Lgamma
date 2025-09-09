@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import h5py
 import astropy.units as u
 import astropy.constants as c
+from astropy.cosmology import FlatLambdaCDM
 import logging
 import os
 from My_Plugin.LoadData import get_center, get_angular_momentum, get_snap_path, get_radius
@@ -29,6 +30,26 @@ def get_units(f):
     #print(f"loading snapshot at z={z:.1f}, h={h:.2f}")
     #print(f"code mass: {code_mass}, code length: {code_length}, code velocity:{code_velocity}")
     return [code_mass, code_length, code_velocity]
+
+def get_cosmology(f):
+    # Set up cosmology
+    # Get matter density parameter (compatible with FIRE-2 and FIRE-3)
+    Om0 = None
+    for key in ['Omega0', 'Omega_Matter']:
+        try:
+            Om0 = f['Header'].attrs.get(key)
+            if Om0 is not None:
+                break
+        except KeyError:
+            continue
+    
+    if Om0 is None:
+        raise ValueError("Could not find cosmology parameters (Omega0 or Omega_Matter) in snapshot")
+    cosmo = FlatLambdaCDM(
+        H0 = f['Header'].attrs.get('HubbleParam')*100*u.km/(u.s*u.Mpc),
+        Om0 = Om0
+    )
+    return cosmo
 
 def get_data(galaxy, snap=600):
     # Load the file

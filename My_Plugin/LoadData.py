@@ -79,7 +79,8 @@ def get_stellar_mass(galaxy: str, snap_id: int) -> float:
 def get_snap_path(name: str, snap: int) -> str:
     paths = {
         'm12f_cd': f'/tscc/lustre/ddn/scratch/yul232/m12f_cr_700_mass_7000/output/snapdir_{snap:03d}/', # constant diffusion
-        'm12i_hd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_hd_fire3/output/snapdir_{snap:03d}/', # hydro
+        'm12i_hd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_hd_fire3/output/', # hydro
+        'm12i_CRSpec': f'/tscc/lustre/ddn/scratch/yel051/snapshots/FIRE3_Sam/m12i_m6e4_MHDCRspec1_fire3_fireBH_fireCR0_Oct142021_crdiffc690_sdp1e-4_gacc31_fa0.5/output/snapdir_{snap:03d}/', # hydro
         'm12i_cd': f'/tscc/lustre/ddn/scratch/yul232/m12i_cr_700/output/snapdir_{snap:03d}/', # constant diffusion
         'm12i_et': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_new_cr_runs/mode1_v1000_AlfC00/snapdir_{snap:03d}/', # extrinsic turbulence
         'm12i_sc_fx10': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_new_cr_runs/mode6_v500_vAion_fx10/snapdir_{snap:03d}/', # self confinement
@@ -91,6 +92,9 @@ def get_snap_path(name: str, snap: int) -> str:
         'm11f_et_AlfvenMax': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11f/m11f_et_AlfvenMax/snapdir_{snap:03d}/',
         'm11f_et_FastMax': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11f/m11f_et_FastMax/snapdir_{snap:03d}/',
         'm11b_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11b/m11b_cr_700/output/snapdir_{snap:03d}/',
+        'm11b_cd_007': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11b/m11b_cr_7/output/snapdir_{snap:03d}/',
+        'm11b_cd_070': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11b/m11b_cr_70/output/snapdir_{snap:03d}/',
+        'm11b_cd_210': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11b/m11b_cr_210/output/snapdir_{snap:03d}/',
         'm11c_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11c_cr_700/output/snapdir_{snap:03d}/',
         'm11d_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11d_cr_700/output/snapdir_{snap:03d}/',
         'm11g_cd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m11g_cr_700/output/snapdir_{snap:03d}/',

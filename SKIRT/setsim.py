@@ -13,7 +13,7 @@ galaxy = str(sys.argv[2])
 snap_id = int(sys.argv[1])
 output_dir = f'output/{galaxy}/snap_{snap_id}'
 #box_size = 30*u.kpc
-box_size = 0.5 * get_radius(galaxy, snap_id) / 2**0.5 * u.kpc
+box_size = 0.5 * get_radius(galaxy, snap_id)# / 2**0.5 * u.kpc # * 3 * 0.02
 
 if __name__ == '__main__':
     # We change the dust type according to the halo mass of the galaxy.

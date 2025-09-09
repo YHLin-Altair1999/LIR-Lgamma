@@ -1,3 +1,4 @@
+import numpy as np
 import My_Plugin.quantity as q
 
 if __name__ == '__main__':
@@ -6,10 +7,13 @@ if __name__ == '__main__':
         #'m12i_et': [60], 
         #'m12i_sc_fx10': [60], 
         #'m12i_sc_fx100': [60],
-        'm12i_cd': np.arange(100, 600, 50),
+        #'m12i_cd': np.arange(100, 600, 50),
         #'m12r_cd': [600],
         #'m12w_cd': [600],
         #'m11b_cd': [600],
+        'm11b_cd_007': [600],
+        'm11b_cd_070': [600],
+        'm11b_cd_210': [600],
         #'m11c_cd': [600],
         #'m11d_cd': [600],
         #'m11f_cd': [600],

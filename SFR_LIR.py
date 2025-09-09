@@ -117,6 +117,7 @@ class SFR_LIR_Plot:
                 #label=galaxy if i == df['galaxy'].tolist().index(galaxy) else ""
             )
             # Add galaxy name annotation beside each data point
+            '''
             ax.annotate(
                 galaxy, 
                 (df['SFR (M_sun/yr)'].iloc[i], df['L_IR (L_sun)'].iloc[i]),
@@ -125,6 +126,7 @@ class SFR_LIR_Plot:
                 fontsize=8,
                 color=self.get_color(galaxy)
             )
+            '''
         
         def SFR2LIR(SFR, epsilon=0.79):
             """Convert SFR to LIR using the Kennicutt relation"""
@@ -154,8 +156,8 @@ class SFR_LIR_Plot:
         ax.set_xscale('log')
         ax.set_yscale('log')
         #ax.set_xlim(SFR_range[0].value, SFR_range[-1].value)
-        ax.set_xlim(1e-1, 1e1)
-        ax.set_ylim(1e8, 1e11)
+        #ax.set_xlim(1e-1, 1e1)
+        #ax.set_ylim(1e8, 1e11)
         ax.set_ylabel(r'$L_{\rm IR, ~8-1000 ~\mu m} ~(L_\odot)$')
         
         # Add other plot elements
@@ -222,14 +224,17 @@ class SFR_LIR_Plot:
 def main():
     print('Running SFR_LIR.py')
     galaxies = {
-        'm12i_et': [60], 
-        'm12i_sc_fx10': [60], 
-        'm12i_sc_fx100': [60],
+        #'m12i_et': [60], 
+        #'m12i_sc_fx10': [60], 
+        #'m12i_sc_fx100': [60],
         'm12i_cd': [600],#, 590, 585, 580],
         'm12f_cd': [600],
         'm12r_cd': [600],
         'm12w_cd': [600],
         'm11b_cd': [600],
+        #'m11b_cd_007': [600],
+        #'m11b_cd_070': [600],
+        #'m11b_cd_210': [600],
         'm11c_cd': [600],
         'm11d_cd': [600],
         'm11f_cd': [600],
@@ -237,9 +242,9 @@ def main():
         'm11h_cd': [600],
         'm11v_cd': [600],
         #'m10v_cd': [600],
-        'm11f_et_AlfvenMax': [600],
-        'm11f_et_FastMax': [600],
-        'm11f_sc_fcas50': [600]
+        #'m11f_et_AlfvenMax': [600],
+        #'m11f_et_FastMax': [600],
+        #'m11f_sc_fcas50': [600]
     }
     
     plotter = SFR_LIR_Plot(galaxies=galaxies)

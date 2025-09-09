@@ -323,7 +323,7 @@ def SFR_make_one_profile(
     return
 
 def SFR_make_onezone(
-        galaxy: str, snap: int
+        galaxy: str, snap: int, tau=100*u.Myr, age_interval=0.5*u.Gyr
         ):
     '''
     calculate the total SFR of a given galaxy snapshot
@@ -346,8 +346,6 @@ def SFR_make_onezone(
     z_now = fs[0]['Header'].attrs.get('Redshift')
     t_now = cosmo.lookback_time(z_now)
     
-    tau = 100*u.Myr
-    age_interval = 0.5*u.Gyr
     #tau_sfrs = np.linspace(0, tau_sfr_max.to('Myr').value, tau_sfr_bins)*u.Myr
     age_bin_edges = np.arange(0, age_interval.to('Myr').value, 1)*u.Myr
     age_bin_centers = (age_bin_edges[:-1] + age_bin_edges[1:])/2
@@ -374,7 +372,7 @@ def SFR_make_onezone(
     #SFR_of_tau += cumulative_mass.to('Msun').value / tau_sfrs.to('yr').value
     #SFR_of_tau = cumulative_mass.to('Msun').value / (edges[1:]*1e6)
     # Define the sliding window width
-    window_width = tau.to('Myr').value  # 100 Myr
+    window_width = tau.to('Myr').value
 
     # Create an array to store SFR values calculated with sliding window
     num_windows = int((age_interval.to('Myr').value - window_width) // 1) + 1

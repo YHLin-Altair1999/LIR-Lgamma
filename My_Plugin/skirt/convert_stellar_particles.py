@@ -6,10 +6,9 @@ import os
 import logging
 
 from glob import glob
-from astropy.cosmology import FlatLambdaCDM
 from My_Plugin.enclose import find_minimal_enclosing_radius_kdtree
 from My_Plugin.LoadData import get_center, get_angular_momentum, get_snap_path, get_radius
-from My_Plugin.general_util import get_units, get_data, align_axis
+from My_Plugin.general_util import get_units, get_data, align_axis, get_cosmology
 from gizmo_analysis import gizmo_star
 logging.basicConfig(level=logging.INFO)
 plt.rcParams.update({
@@ -108,10 +107,7 @@ def convert_stellar_onefile(
     code_mass = units[0]
     code_length = units[1]
     # Set up cosmology
-    cosmo = FlatLambdaCDM(
-        H0 = f['Header'].attrs.get('HubbleParam')*100*u.km/(u.s*u.Mpc),
-        Om0 = f['Header'].attrs.get('Omega0')
-        )
+    cosmo = get_cosmology(f)
 
     # Column 1-3: coordinates
     coords = np.array(f['PartType4']['Coordinates'])*code_length
