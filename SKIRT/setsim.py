@@ -13,7 +13,7 @@ galaxy = str(sys.argv[2])
 snap_id = int(sys.argv[1])
 output_dir = f'output/{galaxy}/snap_{snap_id}'
 #box_size = 30*u.kpc
-box_size = 0.5 * get_radius(galaxy, snap_id)# / 2**0.5 * u.kpc # * 3 * 0.02
+box_size = 0.5 * get_radius(galaxy, snap_id)* u.kpc # / 2**0.5 * u.kpc # * 3 * 0.02
 
 if __name__ == '__main__':
     # We change the dust type according to the halo mass of the galaxy.
@@ -26,6 +26,7 @@ if __name__ == '__main__':
         dust_type = 'MilkyWay'
     else:
         dust_type = 'SMC'
+
     modify_skifile(template_ski, target_ski, [box_size, box_size, box_size], dust_type)
 
     convert_stellar(

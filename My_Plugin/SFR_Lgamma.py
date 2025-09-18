@@ -16,6 +16,7 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
                 sim_table_path='./tables/Lgamma_SFR.csv',
                 obs_pickle_path='./obs_data/fit_results.pkl',  # Use pickle file for observations
                 show_obs_gal_name=False,
+                output_filename='SFR_Lgamma.png',
                 aperture=25*u.kpc):
         """Initialize SFR_Lgamma_Plot with parameters for analysis and visualization"""
         super().__init__(
@@ -25,7 +26,8 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
             Lgamma_profile_folder=Lgamma_profile_folder,
             sim_table_path=sim_table_path,
             obs_pickle_path=obs_pickle_path,  # Pass pickle path to parent
-            show_obs_gal_name=show_obs_gal_name
+            show_obs_gal_name=show_obs_gal_name,
+            output_filename=output_filename
         )
         self.SFR_folder = SFR_folder
         self.aperture = aperture
@@ -373,7 +375,7 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
         #    ratio = 10**(1.2*np.max(np.abs(np.log10(np.array(all_ratios)))))
         #    ax.set_ylim(1/ratio, ratio)
         ax.set_ylim(1e-2, 8)
-        ax.set_ylabel(r'$L_{\gamma}/L_{\gamma,\mathrm{calorimetric}}$')
+        ax.set_ylabel(r'$L_{\gamma}/L_{\gamma,\mathrm{cal}}$')
     
     def finalize(self, fig, axes):
         """Finalize plot with labels, scales, and save"""
@@ -391,7 +393,8 @@ class SFR_Lgamma_Plot(LIR_Lgamma_Plot):
         axes[1].set_xlim(self.x_range[0], self.x_range[-1])
         
         plt.tight_layout()
-        fig.savefig('SFR-Lgamma.png', dpi=300)
+        print(f'Saving figure to {self.output_filename}')
+        fig.savefig(self.output_filename, dpi=300)
 
 def main(E_min=1*u.GeV, E_max=1000*u.GeV, show_names=False):
     print('Do not run this file directly; it is meant to be imported and used as a module.')

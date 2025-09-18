@@ -48,6 +48,7 @@ def e_cr(field, data):
     CR energy density, erg/cm**3
     '''
     E_cr = data[('PartType0', 'CosmicRayEnergy')].v*code_velocity**2*code_mass
+    print(E_cr.shape)
     if len(E_cr.shape) > 1:
         E_cr = np.sum(E_cr, axis=1) # sum over all CR energy
     e_cr = E_cr/data[('gas', 'volume')]

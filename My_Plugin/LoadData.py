@@ -80,7 +80,10 @@ def get_snap_path(name: str, snap: int) -> str:
     paths = {
         'm12f_cd': f'/tscc/lustre/ddn/scratch/yul232/m12f_cr_700_mass_7000/output/snapdir_{snap:03d}/', # constant diffusion
         'm12i_hd': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_hd_fire3/output/', # hydro
-        'm12i_CRSpec': f'/tscc/lustre/ddn/scratch/yel051/snapshots/FIRE3_Sam/m12i_m6e4_MHDCRspec1_fire3_fireBH_fireCR0_Oct142021_crdiffc690_sdp1e-4_gacc31_fa0.5/output/snapdir_{snap:03d}/', # hydro
+        'm12i_FIRE3_CRSpec': f'/tscc/lustre/ddn/scratch/yel051/snapshots/FIRE3/m12i/m12i_m6e4_MHDCRspec1_fire3_fireBH_fireCR0_Oct142021_crdiffc690_sdp1e-4_gacc31_fa0.5/output/snapdir_{snap:03d}/',
+        'm12i_FIRE3_CRSpec_noBH': f'/tscc/lustre/ddn/scratch/yel051/snapshots/FIRE3/m12i/m12i_m6e4_MHDCRspec1_fire3_fireBH_fireCR0_Oct142021_crdiffc690_sdp1e10_gacc31_fa0.5/output/snapdir_{snap:03d}/',
+        'm12i_FIRE3_CRSpec1': f'/tscc/lustre/ddn/scratch/yel051/snapshots/FIRE3/m12i/m12i_m6e4_MHDCRspec1_fire3_fireBH_fireCR1_Oct252021_crdiffc1_sdp1e10_gacc31_fa0.5_fcr3e-3_vw3000/output/snapdir_{snap:03d}/',
+        'm12i_FIRE3_MHD': f'/tscc/lustre/ddn/scratch/yel051/snapshots/FIRE3/m12i/m12i_m6e4_MHD_fire3_fireBH_Dec292021_modSNeEgyPow0pt33_crdiffc690_sdp1e10_gacc31_fa0.5_fcr3e-4_vw3000/output/snapdir_{snap:03d}/',
         'm12i_cd': f'/tscc/lustre/ddn/scratch/yul232/m12i_cr_700/output/snapdir_{snap:03d}/', # constant diffusion
         'm12i_et': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_new_cr_runs/mode1_v1000_AlfC00/snapdir_{snap:03d}/', # extrinsic turbulence
         'm12i_sc_fx10': f'/tscc/lustre/ddn/scratch/yel051/snapshots/m12i_new_cr_runs/mode6_v500_vAion_fx10/snapdir_{snap:03d}/', # self confinement

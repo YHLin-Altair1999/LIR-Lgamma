@@ -7,7 +7,7 @@ import os
 from glob import glob
 from gizmo_analysis import gizmo_star
 from My_Plugin.LoadData import get_center, get_angular_momentum, get_snap_path, get_radius
-from My_Plugin.skirt.dust_scaling import dust_to_gas_ratio_RemyRuyer, dust_to_gas_ratio_Galliano
+from My_Plugin.skirt.dust_scaling import dust_to_gas_ratio_RemyRuyer, dust_to_gas_ratio_Galliano, dust_to_gas_ratio_RemyRuyer_nodrop
 from My_Plugin.general_util import get_units, get_data, align_axis, get_cosmology
 from matplotlib.colors import LogNorm
 logging.basicConfig(level=logging.INFO)
@@ -106,6 +106,7 @@ def convert_gas_onefile(
     logOH_12 = np.log10(nO_nH_ratio) + 12
 
     dust_to_gas_ratio = dust_to_gas_ratio_RemyRuyer(nO_nH_ratio)
+    #dust_to_gas_ratio = dust_to_gas_ratio_RemyRuyer_nodrop(nO_nH_ratio)
     #dust_to_gas_ratio = dust_to_gas_ratio_Galliano(nO_nH_ratio)
     dust_to_metal_ratio = dust_to_gas_ratio / metallicity
 
@@ -318,7 +319,7 @@ def print_statistics_summary(stats_file='gas_statistics.npy'):
         total_mass = sum(stats['total_mass'] for stats in stats_data)
         
         print(f"Statistics summary from {len(stats_data)} files:")
-        print(f"File numbers: {sorted(file_numbers)}")
+        #print(f"File numbers: {sorted(file_numbers)}")
         print(f"Total gas mass: {total_mass:.2e} M_sun")
         print(f"Average mass per file: {total_mass/len(stats_data):.2e} M_sun")        
         print(f"Memory-efficient storage: ~{len(stats_data)*2:.1f} KB for histograms vs potential GB for raw particle data")

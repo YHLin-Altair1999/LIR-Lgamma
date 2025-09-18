@@ -39,8 +39,8 @@ def generate_all_tasks():
     for galaxy in gal_snap_pairs.keys():
         snaps = gal_snap_pairs[galaxy]
         for snap in snaps:
-            #width = (0.5 * get_radius(galaxy, snap) / 2**0.5, 'kpc')
-            width = (100, 'kpc')
+            width = (0.5 * get_radius(galaxy, snap), 'kpc')
+            #width = (100, 'kpc')
             for field in fields:
                 for plot_type in plot_types:
                     if plot_type in ['slice', 'projection']:
@@ -110,25 +110,27 @@ def main():
         #'m12w_cd': [600],
         #'m12i_hd': [20] 
         #'m12i_CRSpec': [60] 
-        'm12i_cd': [600], 
+        #'m12i_cd': [600], 
+        #'m12i_FIRE3_CRSpec_noBH': [60], 
+        #'m12i_FIRE3_CRSpec': np.arange(2, 40, 1), 
         #'m12i_et': [60], 
         #'m12i_sc_fx10': [60], 
         #'m12i_sc_fx100': [60],
-        #'m11b_cd': [600],
-        #'m11b_cd_007': [600],
-        #'m11b_cd_070': [600],
-        #'m11b_cd_210': [600],
-        #'m11c_cd': [600],
-        #'m11d_cd': [600],
-        #'m11f_cd': [600],
-        #'m11g_cd': [600],
-        #'m11h_cd': [600],
-        #'m11v_cd': [600],
+        'm11b_cd': [600],
+        'm11b_cd_007': [600],
+        'm11b_cd_070': [600],
+        'm11b_cd_210': [600],
+        'm11c_cd': [600],
+        'm11d_cd': [600],
+        'm11f_cd': [600],
+        'm11g_cd': [600],
+        'm11h_cd': [600],
+        'm11v_cd': [600],
         #'m10v_cd': [600],
         #'m09_cd': [600],
-        #'m11f_et_AlfvenMax': [600],
-        #'m11f_et_FastMax': [600],
-        #'m11f_sc_fcas50': [600]
+        'm11f_et_AlfvenMax': [600],
+        'm11f_et_FastMax': [600],
+        'm11f_sc_fcas50': [600]
         }
     width = (80, 'kpc')
     plot_types = [
@@ -140,7 +142,7 @@ def main():
     normals = ['x', 'y', 'z']
     fields = [
         #('gas', 'density'),
-        #('gas', 'CR_energy_density'),
+        ('gas', 'CR_energy_density'),
         #('gas', 'CRp_number_density'),
         ('gas', 'Pion_decay_gamma_ray_source_function'),
         #('gas', 'inverse_Compton_gamma_ray_source_function'),

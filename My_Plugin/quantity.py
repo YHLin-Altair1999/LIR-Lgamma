@@ -7,7 +7,7 @@ import astropy.constants as c
 from scipy.integrate import simpson
 from My_Plugin.LoadData import get_center, get_snap_path
 from My_Plugin.Add_Fields import add_fields
-from My_Plugin.general_util import get_units
+from My_Plugin.general_util import get_cosmology, get_units
 import h5py
 from glob import glob
 import os
@@ -204,6 +204,11 @@ def L_gamma_make_one_profile_Pfrommer(
 
         r = np.linalg.norm(f['PartType0']['Coordinates'][:,:]*code_length - np.array(center)*code_length, axis=1)
         E_cr = f['PartType0']['CosmicRayEnergy'] * code_mass * code_velocity**2
+        # Check if E_cr is 2D and sum along 2nd axis if needed
+        if len(E_cr.shape) > 1:
+            # This is for FIRE-3 multi-bin runs
+            # Note that this is not accurate as we should calculate gamma ray emissivity bin by bin
+            E_cr = np.sum(E_cr, axis=1)# * code_mass * code_velocity**2
         density = f['PartType0']['Density'] * code_mass / code_length**3
         mass = f['PartType0']['Masses'] * code_mass
         B_vec = f['PartType0']['MagneticField'] * u.Gauss
@@ -339,10 +344,11 @@ def SFR_make_onezone(
     code_mass = units[0]
     code_length = units[1]
     code_velocity = units[2]
-    cosmo = FlatLambdaCDM(
-            H0 = fs[0]['Header'].attrs.get('HubbleParam')*100*u.km/(u.s*u.Mpc),
-            Om0 = fs[0]['Header'].attrs.get('Omega0')
-            )
+    cosmo = get_cosmology(fs[0])
+    #cosmo = FlatLambdaCDM(
+    #        H0 = fs[0]['Header'].attrs.get('HubbleParam')*100*u.km/(u.s*u.Mpc),
+    #        Om0 = fs[0]['Header'].attrs.get('Omega0')
+    #        )
     z_now = fs[0]['Header'].attrs.get('Redshift')
     t_now = cosmo.lookback_time(z_now)
     

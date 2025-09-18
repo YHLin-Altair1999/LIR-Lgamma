@@ -100,8 +100,18 @@ def make_rgb_fits(hdul, bands, filename, normalize=True):
     # Turn off axis lines, ticks, and labels
     ax.set_axis_off()
     
-    image = np.stack([i**0.3 for i in [r, g, b]], axis=2)
+    image = np.stack([i**0.2 for i in [r, g, b]], axis=2)
     image /= np.max(image)
+
+    #image = np.stack([i for i in [r, g, b]], axis=2)
+    #image /= np.max(image)
+    #image = Stretch().stretch(image)
+
+    image = np.stack([i for i in [r, g, b]], axis=2)
+    image = np.log10(image)
+    image -= np.min(image)
+    image /= np.max(image)
+    
     plot = ax.imshow(
         np.fliplr(image),
         origin='upper',

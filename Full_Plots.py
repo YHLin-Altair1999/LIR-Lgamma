@@ -37,7 +37,22 @@ plotter = LIR_Lgamma_Plot(
     E_min=E_min,
     E_max=E_max,
     show_sim_gal_name=False,
-    show_obs_gal_name=False
+    show_obs_gal_name=False,
+    show_calorimetric_limit=False,
+    )
+
+# Either run the full pipeline
+plotter.run()
+
+# Create the plotter with our parameters
+plotter = LIR_Lgamma_Plot(
+    galaxies=galaxies,
+    E_min=E_min,
+    E_max=E_max,
+    show_sim_gal_name=True,
+    show_obs_gal_name=False,
+    show_calorimetric_limit=False,
+    output_filename='LIR_Lgamma_SimNames.png'
     )
 
 # Either run the full pipeline

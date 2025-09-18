@@ -27,6 +27,21 @@ def dust_to_gas_ratio_RemyRuyer(nO_nH_ratio):
     G_D_ratio = 10**y
     return 1/G_D_ratio
 
+def dust_to_gas_ratio_RemyRuyer_nodrop(nO_nH_ratio):
+    '''
+    From Rémy-Ruyer et al. (2014): https://www.aanda.org/articles/aa/full_html/2014/03/aa22803-13/aa22803-13.html
+    Using the power-law fit with X_{CO, Z}, but only the high-metallicity end.
+    '''
+    x = 12 + np.log10(nO_nH_ratio)
+
+    a, b = 2.21, 0.96
+    alpha_H, alpha_L = 1.00, 3.10
+    x_t, x_sun = 8.10, 8.69
+
+    y = a + alpha_H*(x_sun - x)
+    G_D_ratio = 10**y
+    return 1/G_D_ratio
+
 def dust_to_gas_ratio_Galliano(nO_nH_ratio):
     '''
     From Galliano et al. (2021): https://ui.adsabs.harvard.edu/abs/2021A%26A...649A..18G/abstract
